@@ -1,0 +1,17 @@
+{
+  "name": "html",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Formatting setup for the web project",
+  "scripts": {
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.24.0",
+    "prettier": "^3.8.1"
+  }
+}

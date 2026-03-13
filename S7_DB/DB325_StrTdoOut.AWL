@@ -1,0 +1,1188 @@
+TYPE UDT 33
+// udt33
+
+
+  STRUCT 	
+   SndAcv : BOOL ;	
+   SndDon : BOOL ;	
+   RcvAcv : BOOL ;	
+   RcvDon : BOOL ;	
+   SetBit : BOOL ;	
+   ClrBit : BOOL ;	
+   Cmd : INT ;	
+   Stt : INT ;	
+   Nr : INT ;	
+   Value : ARRAY  [0 .. 31 ] OF INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 30
+// udt30
+
+
+  STRUCT 	
+   Vrs : REAL ;	// version
+   RunCmd : BOOL ;	// Run Command
+   StpCmd : BOOL ;	// Stop Command
+   RstCmd : BOOL ;	// Reset Command
+   ActOk : BOOL ;	// Actual OK
+   SetAcv : BOOL ;	// setpoint all zone active
+   SetSel : INT ;	// setpoint selection
+   Mode : INT ;	// Absolute = 0, relative = 1
+   Set : REAL ;	// setpoint to all zone
+   ZonCou : INT ;	// Zone Counter
+   RunSttCou : INT ;	// Run Status Counter
+   AlaSumCou : INT ;	// Alarm Summary Counter
+   AlaMinCou : INT ;	// Alarm Minimum Counter
+   AlaMaxCou : INT ;	// Alarm Maximum Counter
+   AlaSenCou : INT ;	// Alarm Sensor Counter
+   WarSumCou : INT ;	// Warning Summary Counter
+   WarMinCou : INT ;	// Warning Minimum Counter
+   WarMaxCou : INT ;	// Warning Maximum Counter
+   StaTimSet : REAL ;	// Start Timer Set 
+   StaTimAct : REAL ;	// Start Timer Actual
+   LivCou : INT ;	// live counter
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 32
+// udt32
+
+
+  STRUCT 	
+   Vrs : REAL ;	// version
+   Dsa : WORD ;	// disabled
+   RunCmd : BOOL ;	// run command
+   StpCmd : BOOL ;	// stop command
+   RstCmd : BOOL ;	// reset command
+   RunStt : BOOL ;	// run status
+   Mode : INT ;	// mode
+   Set : REAL ;	// setpoint
+   SetMne : REAL ;	// main setpoint
+   SetAux : REAL ;	// aux. setpoint
+   SetMod : WORD ;	// mode setpoint
+   SetSel : INT ;	// setpoint select
+   Act : REAL ;	// actual
+   Y : REAL ;	// output controller
+   X : REAL ;	// deviation
+   InpSen : BOOL ;	// input sensor [used for fault]
+   AlaMod : WORD ;	// alarm mode
+   AlaSum : BOOL ;	// alarm summary
+   AlaMin : BOOL ;	// alarm actual min.
+   AlaMax : BOOL ;	// alarm actual max.
+   AlaSen : BOOL ;	// alarm sensor
+   ActMin : REAL ;	// limit actual min.
+   ActMax : REAL ;	// limit actual max.
+   WarMod : WORD ;	// warning mode
+   WarSum : BOOL ;	// warning summary
+   WarMin : BOOL ;	// warning dev. min
+   WarMax : BOOL ;	// warning dev. max
+   X_Min : REAL ;	// limit dev. min.
+   X_Max : REAL ;	// limit dev. max.
+   SetMin : REAL ;	// setpoint limit min.
+   SetMax : REAL ;	// setpoint limit max.
+   ActOk : BOOL ;	// actual ok
+   ActOk_Sel : BOOL ;	// actual ok - Select
+   ActOk_On_Set : REAL ;	// actual ok - on setpoint
+   ActOk_OffSet : REAL ;	// actual ok - off setpoint
+   ActOk_On_DelSet : REAL ;	// actual ok - on delay setpoint
+   ActOk_On_DelAct : REAL ;	// actual ok - on delay actual
+   ActOk_OffDelSet : REAL ;	// actual ok - off delay setpoint
+   ActOk_OffDelAct : REAL ;	// actual ok - off delay actual
+   LivCou : INT ;	// live counter
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 34
+// udt34
+
+
+  STRUCT 	
+   Vrs : REAL ;	
+   AdrPsg : INT ;	
+   AdrZon : INT ;	
+   SndCou : INT ;	
+   RcvCou : INT ;	
+   Dat : UDT 33;	
+   LivCou : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 41
+// udt41
+
+
+  STRUCT 	
+   Vrs : REAL ;	// version
+   Mode : INT ;	// mode of output (direct, stardelta or dahlander)
+   Dsa : WORD ;	// disable
+   RunCmd : BOOL ;	// run command
+   StpCmd : BOOL ;	// stop command
+   FstCmd : BOOL ;	// fast command
+   RstCmd : BOOL ;	// reset command
+   RunStt : BOOL ;	// run status
+   AlrMod : WORD ;	// alarm mode
+   AlaSum : BOOL ;	// alarm general
+   AlaCbr : BOOL ;	// alarm circuit breaker
+   AlaSsw : BOOL ;	// alarm service switch
+   AlaOvt : BOOL ;	// alarm overtemperature
+   AlaSofSta : BOOL ;	// alarm soft start
+   WarSum : BOOL ;	// warning general
+   WarPrsMin : BOOL ;	// warning pressure min
+   InpCbr : BOOL ;	// circuit breaker input
+   InpSsw : BOOL ;	// service switch input
+   InpPrsMin : BOOL ;	// pressure min input
+   InpOvt : BOOL ;	// overtemperature input
+   InpSofSta : BOOL ;	// soft start fault input
+   InpSofStaRdy : BOOL ;	// soft start ready input
+   Out001 : BOOL ;	// output 1 (net)
+   Out002 : BOOL ;	// output 2 (star, slow)
+   Out003 : BOOL ;	// output 3 (delta, fast)
+   StaTimSet : REAL ;	// Start time setpoint
+   StaTimAct : REAL ;	// Start time Actual
+   CntDelTimSet : REAL ;	// contactor delay time setpoint
+   CntTimAct : REAL ;	// contactor delay time Actual
+   FstDelTimSet : REAL ;	// fast delay time setpoint
+   FstSlwTimAct : REAL ;	// fast slow delay time Actual
+   PrsMinDelSet : REAL ;	// Pressure Min delay setpoint
+   PrsMinDelAct : REAL ;	// Pressure Min delay actual
+   LivCou : INT ;	// live counter
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 62
+// udt62
+
+
+  STRUCT 	
+   Vrs : REAL ;	
+   AlrMod : WORD ;	
+   AlaMst : ARRAY  [1 .. 16 ] OF BOOL ;	
+   InpMst : ARRAY  [1 .. 16 ] OF BOOL ;	
+   InpMstCnt : BOOL ;	
+   AlaMstCnt : BOOL ;	
+   AlaSum : BOOL ;	
+   SvcKey : BOOL ;	
+   LivCou : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 50
+// udt50
+
+
+  STRUCT 	
+   Vrs : REAL ;	// version
+   DrvAdr : INT ;	// Drive Address
+   Dsa : WORD ;	// Disable
+   Mode : WORD ;	// Mode
+   RunCmd : BOOL ;	// Run Command 
+   StpCmd : BOOL ;	// Stop Command
+   JogFwdCmd : BOOL ;	// Jog Forward Command
+   JogBkwCmd : BOOL ;	// Jog Backward Command
+   Aut001Cmd : BOOL ;	// Auto 1 Command
+   Aut002Cmd : BOOL ;	// Auto 2 Command
+   RstCmd : BOOL ;	// Reset Command
+   RunStt : BOOL ;	// Run Status
+   SpdUp : BOOL ;	// Speed Up
+   RamRun : BOOL ;	// Ramping Run
+   AlrMod : WORD ;	// Alarm Mode
+   AlaSum : BOOL ;	// Alarm Summary 
+   AlaDrv : BOOL ;	// Alarm Drive
+   AlaCom : BOOL ;	// Alarm Communication
+   AlaCbr : BOOL ;	// Alarm Circuit Breaker
+   AlaSsw : BOOL ;	// Alarm Service Switch
+   AlaTimOut : BOOL ;	// Alarm Time Out
+   AlaExtFlt : BOOL ;	// Alarm External Fault
+   AlaDrvBlo : BOOL ;	// Alarm Drive Bloked
+   WarSum : BOOL ;	// Warning Summary
+   InpDrvFlt : BOOL ;	// Input Drive Fault
+   InpDrvCom : BOOL ;	// Input Drive Communication
+   InpCbr : BOOL ;	// Input Circuit Breaker
+   InpSsw : BOOL ;	// Input Service Switch
+   InpDrvRdy : BOOL ;	// Input Drive Ready
+   InpDrvRun : BOOL ;	// Input Drive Run
+   InpDrvAla : BOOL ;	// Input Drive Alarm
+   InpExtFlt : BOOL ;	// Input External Fault
+   InpExtWar : BOOL ;	// Input External Warning
+   InpOvs : BOOL ;	// Input Over Speed
+   StaTimSet : REAL ;	// Start Time Set
+   StaTimAct : REAL ;	// Start Time Actual
+   DrvBloDelSet : REAL ;	// Drive Blocked Delay Set
+   DrvBloDelAct : REAL ;	// Drive Blocked Delay Actual
+   SpdSet : REAL ;	// Speed Set
+   SpdAct : REAL ;	// Speed Actual
+   SpdCal : REAL ;	// Speed Calculation
+   SpdMas : REAL ;	// Speed Master
+   SpdOut : REAL ;	// Speed Out
+   SpdSta : REAL ;	// Speed Start
+   SpdOff : REAL ;	// Speed Off
+   SpdAut001 : REAL ;	// Speed Auto 1
+   SpdAut002 : REAL ;	// Speed Auto 2
+   SpdJogFwd : REAL ;	// Speed Jog Forward
+   SpdJogBkw : REAL ;	// Speed Jog Backward
+   SpdSetMin : REAL ;	// Speed Set Minimum
+   SpdSetMax : REAL ;	// Speed Set Maximum
+   FacSpdMax : REAL ;	// Factor Speed Maximum
+   LoaPosSet : REAL ;	// Load Positive Set
+   LoaNegSet : REAL ;	// Load Negative Set
+   LoaAct : REAL ;	// Load Actual
+   LoaSetMin : REAL ;	// Load Set Min
+   LoaSetMax : REAL ;	// Load Set Max
+   FacLoaMax : REAL ;	// Factor Load Maximum
+   PowAct : REAL ;	// Power Actual
+   FacPowMax : REAL ;	// Factor Power Maximum
+   TmpAct : REAL ;	// Temperatur Actual
+   FacTmpMax : REAL ;	// Factor Temperature Maximum
+   DrvFltNum : INT ;	// Drive Fault Number
+   DrvWarNum : INT ;	// Drive Warning Number
+   IO_Inp : ARRAY  [0 .. 15 ] OF BOOL ;	// IO Input
+   IO_Out : ARRAY  [0 .. 15 ] OF BOOL ;	// IO Output
+   OutRun : BOOL ;	// Out Run
+   OutFstStp : BOOL ;	// Out Fast Stop
+   PlsOn : BOOL ;	// Pulse ON
+   PlsOff : BOOL ;	// Pulse OFF
+   PlsHlp : BOOL ;	// Pulse Help
+   MacRamUp : REAL ;	// Machine Ramping Up
+   MacRamDwn : REAL ;	// Machine Ramping Down
+   PrcRamUp : REAL ;	// Process Ramping Up
+   PrcRamDwn : REAL ;	// Process Ramping Down
+   FacRat : REAL ;	// Factor Ratio
+   FacSlv : REAL ;	// Factor Slave
+   FacCtl : REAL ;	// Factor Control
+   FacCtlInf : REAL ;	// Factor Control Influence
+   FacMecInf : REAL ;	// Factor Mechanical Influence
+   FacOvs : REAL ;	// Factor OverSpeed
+   LivCou : INT ;	// Live Counter
+  END_STRUCT ;	
+END_TYPE
+
+DATA_BLOCK DB 325
+TITLE =
+VERSION : 0.0
+
+
+  STRUCT 	
+   TmpAll : UDT 30;	
+   TmpAnn011 : UDT 32;	
+   TmpAnn012 : UDT 32;	
+   TmpAnn021 : UDT 32;	
+   TmpAnn022 : UDT 32;	
+   TmpAnn031 : UDT 32;	
+   TmpAnn032 : UDT 32;	
+   PmtTmpAnn011 : UDT 34;	
+   PmtTmpAnn012 : UDT 34;	
+   PmtTmpAnn021 : UDT 34;	
+   PmtTmpAnn022 : UDT 34;	
+   PmtTmpAnn031 : UDT 34;	
+   PmtTmpAnn032 : UDT 34;	
+   FanAnn011 : UDT 41;	
+   FanAnn012 : UDT 41;	
+   FanAnn021 : UDT 41;	
+   FanAnn022 : UDT 41;	
+   FanAnn031 : UDT 41;	
+   FanAnn032 : UDT 41;	
+   Mst : UDT 62;	
+   Drv001 : UDT 50;	
+  END_STRUCT ;	
+BEGIN
+   TmpAll.Vrs := 0.000000e+000; 
+   TmpAll.RunCmd := FALSE; 
+   TmpAll.StpCmd := FALSE; 
+   TmpAll.RstCmd := FALSE; 
+   TmpAll.ActOk := TRUE; 
+   TmpAll.SetAcv := FALSE; 
+   TmpAll.SetSel := 0; 
+   TmpAll.Mode := 1; 
+   TmpAll.Set := -5.000000e+000; 
+   TmpAll.ZonCou := 6; 
+   TmpAll.RunSttCou := 0; 
+   TmpAll.AlaSumCou := 0; 
+   TmpAll.AlaMinCou := 0; 
+   TmpAll.AlaMaxCou := 0; 
+   TmpAll.AlaSenCou := 0; 
+   TmpAll.WarSumCou := 0; 
+   TmpAll.WarMinCou := 0; 
+   TmpAll.WarMaxCou := 0; 
+   TmpAll.StaTimSet := 2.000000e+000; 
+   TmpAll.StaTimAct := 0.000000e+000; 
+   TmpAll.LivCou := 6022; 
+   TmpAnn011.Vrs := 0.000000e+000; 
+   TmpAnn011.Dsa := W#16#0; 
+   TmpAnn011.RunCmd := FALSE; 
+   TmpAnn011.StpCmd := FALSE; 
+   TmpAnn011.RstCmd := FALSE; 
+   TmpAnn011.RunStt := FALSE; 
+   TmpAnn011.Mode := 0; 
+   TmpAnn011.Set := 1.400000e+002; 
+   TmpAnn011.SetMne := 1.400000e+002; 
+   TmpAnn011.SetAux := 0.000000e+000; 
+   TmpAnn011.SetMod := W#16#0; 
+   TmpAnn011.SetSel := 3; 
+   TmpAnn011.Act := 3.660000e+001; 
+   TmpAnn011.Y := 0.000000e+000; 
+   TmpAnn011.X := 1.034000e+002; 
+   TmpAnn011.InpSen := TRUE; 
+   TmpAnn011.AlaMod := W#16#6; 
+   TmpAnn011.AlaSum := FALSE; 
+   TmpAnn011.AlaMin := FALSE; 
+   TmpAnn011.AlaMax := FALSE; 
+   TmpAnn011.AlaSen := FALSE; 
+   TmpAnn011.ActMin := 0.000000e+000; 
+   TmpAnn011.ActMax := 2.000000e+002; 
+   TmpAnn011.WarMod := W#16#3; 
+   TmpAnn011.WarSum := FALSE; 
+   TmpAnn011.WarMin := FALSE; 
+   TmpAnn011.WarMax := FALSE; 
+   TmpAnn011.X_Min := -3.000000e+000; 
+   TmpAnn011.X_Max := 5.000000e+000; 
+   TmpAnn011.SetMin := 0.000000e+000; 
+   TmpAnn011.SetMax := 3.000000e+002; 
+   TmpAnn011.ActOk := TRUE; 
+   TmpAnn011.ActOk_Sel := FALSE; 
+   TmpAnn011.ActOk_On_Set := 0.000000e+000; 
+   TmpAnn011.ActOk_OffSet := 0.000000e+000; 
+   TmpAnn011.ActOk_On_DelSet := 0.000000e+000; 
+   TmpAnn011.ActOk_On_DelAct := 0.000000e+000; 
+   TmpAnn011.ActOk_OffDelSet := 0.000000e+000; 
+   TmpAnn011.ActOk_OffDelAct := 0.000000e+000; 
+   TmpAnn011.LivCou := 6022; 
+   TmpAnn012.Vrs := 0.000000e+000; 
+   TmpAnn012.Dsa := W#16#0; 
+   TmpAnn012.RunCmd := FALSE; 
+   TmpAnn012.StpCmd := FALSE; 
+   TmpAnn012.RstCmd := FALSE; 
+   TmpAnn012.RunStt := FALSE; 
+   TmpAnn012.Mode := 0; 
+   TmpAnn012.Set := 1.400000e+002; 
+   TmpAnn012.SetMne := 1.400000e+002; 
+   TmpAnn012.SetAux := 0.000000e+000; 
+   TmpAnn012.SetMod := W#16#0; 
+   TmpAnn012.SetSel := 3; 
+   TmpAnn012.Act := 3.550000e+001; 
+   TmpAnn012.Y := 0.000000e+000; 
+   TmpAnn012.X := 1.045000e+002; 
+   TmpAnn012.InpSen := TRUE; 
+   TmpAnn012.AlaMod := W#16#6; 
+   TmpAnn012.AlaSum := FALSE; 
+   TmpAnn012.AlaMin := FALSE; 
+   TmpAnn012.AlaMax := FALSE; 
+   TmpAnn012.AlaSen := FALSE; 
+   TmpAnn012.ActMin := 0.000000e+000; 
+   TmpAnn012.ActMax := 2.000000e+002; 
+   TmpAnn012.WarMod := W#16#3; 
+   TmpAnn012.WarSum := FALSE; 
+   TmpAnn012.WarMin := FALSE; 
+   TmpAnn012.WarMax := FALSE; 
+   TmpAnn012.X_Min := -5.000000e+000; 
+   TmpAnn012.X_Max := 8.000000e+000; 
+   TmpAnn012.SetMin := 0.000000e+000; 
+   TmpAnn012.SetMax := 3.000000e+002; 
+   TmpAnn012.ActOk := TRUE; 
+   TmpAnn012.ActOk_Sel := FALSE; 
+   TmpAnn012.ActOk_On_Set := 0.000000e+000; 
+   TmpAnn012.ActOk_OffSet := 0.000000e+000; 
+   TmpAnn012.ActOk_On_DelSet := 0.000000e+000; 
+   TmpAnn012.ActOk_On_DelAct := 0.000000e+000; 
+   TmpAnn012.ActOk_OffDelSet := 0.000000e+000; 
+   TmpAnn012.ActOk_OffDelAct := 0.000000e+000; 
+   TmpAnn012.LivCou := 6025; 
+   TmpAnn021.Vrs := 0.000000e+000; 
+   TmpAnn021.Dsa := W#16#0; 
+   TmpAnn021.RunCmd := FALSE; 
+   TmpAnn021.StpCmd := FALSE; 
+   TmpAnn021.RstCmd := FALSE; 
+   TmpAnn021.RunStt := FALSE; 
+   TmpAnn021.Mode := 0; 
+   TmpAnn021.Set := 1.350000e+002; 
+   TmpAnn021.SetMne := 1.350000e+002; 
+   TmpAnn021.SetAux := 0.000000e+000; 
+   TmpAnn021.SetMod := W#16#0; 
+   TmpAnn021.SetSel := 3; 
+   TmpAnn021.Act := 3.510000e+001; 
+   TmpAnn021.Y := 0.000000e+000; 
+   TmpAnn021.X := 9.990000e+001; 
+   TmpAnn021.InpSen := TRUE; 
+   TmpAnn021.AlaMod := W#16#6; 
+   TmpAnn021.AlaSum := FALSE; 
+   TmpAnn021.AlaMin := FALSE; 
+   TmpAnn021.AlaMax := FALSE; 
+   TmpAnn021.AlaSen := FALSE; 
+   TmpAnn021.ActMin := 0.000000e+000; 
+   TmpAnn021.ActMax := 2.000000e+002; 
+   TmpAnn021.WarMod := W#16#3; 
+   TmpAnn021.WarSum := FALSE; 
+   TmpAnn021.WarMin := FALSE; 
+   TmpAnn021.WarMax := FALSE; 
+   TmpAnn021.X_Min := -7.000000e+000; 
+   TmpAnn021.X_Max := 4.000000e+000; 
+   TmpAnn021.SetMin := 0.000000e+000; 
+   TmpAnn021.SetMax := 3.000000e+002; 
+   TmpAnn021.ActOk := TRUE; 
+   TmpAnn021.ActOk_Sel := FALSE; 
+   TmpAnn021.ActOk_On_Set := 0.000000e+000; 
+   TmpAnn021.ActOk_OffSet := 0.000000e+000; 
+   TmpAnn021.ActOk_On_DelSet := 0.000000e+000; 
+   TmpAnn021.ActOk_On_DelAct := 0.000000e+000; 
+   TmpAnn021.ActOk_OffDelSet := 0.000000e+000; 
+   TmpAnn021.ActOk_OffDelAct := 0.000000e+000; 
+   TmpAnn021.LivCou := 6025; 
+   TmpAnn022.Vrs := 0.000000e+000; 
+   TmpAnn022.Dsa := W#16#0; 
+   TmpAnn022.RunCmd := FALSE; 
+   TmpAnn022.StpCmd := FALSE; 
+   TmpAnn022.RstCmd := FALSE; 
+   TmpAnn022.RunStt := FALSE; 
+   TmpAnn022.Mode := 0; 
+   TmpAnn022.Set := 1.350000e+002; 
+   TmpAnn022.SetMne := 1.350000e+002; 
+   TmpAnn022.SetAux := 0.000000e+000; 
+   TmpAnn022.SetMod := W#16#0; 
+   TmpAnn022.SetSel := 3; 
+   TmpAnn022.Act := 3.510000e+001; 
+   TmpAnn022.Y := 0.000000e+000; 
+   TmpAnn022.X := 9.990000e+001; 
+   TmpAnn022.InpSen := TRUE; 
+   TmpAnn022.AlaMod := W#16#6; 
+   TmpAnn022.AlaSum := FALSE; 
+   TmpAnn022.AlaMin := FALSE; 
+   TmpAnn022.AlaMax := FALSE; 
+   TmpAnn022.AlaSen := FALSE; 
+   TmpAnn022.ActMin := 0.000000e+000; 
+   TmpAnn022.ActMax := 2.000000e+002; 
+   TmpAnn022.WarMod := W#16#3; 
+   TmpAnn022.WarSum := FALSE; 
+   TmpAnn022.WarMin := FALSE; 
+   TmpAnn022.WarMax := FALSE; 
+   TmpAnn022.X_Min := -3.000000e+000; 
+   TmpAnn022.X_Max := 3.000000e+000; 
+   TmpAnn022.SetMin := 0.000000e+000; 
+   TmpAnn022.SetMax := 3.000000e+002; 
+   TmpAnn022.ActOk := TRUE; 
+   TmpAnn022.ActOk_Sel := FALSE; 
+   TmpAnn022.ActOk_On_Set := 0.000000e+000; 
+   TmpAnn022.ActOk_OffSet := 0.000000e+000; 
+   TmpAnn022.ActOk_On_DelSet := 0.000000e+000; 
+   TmpAnn022.ActOk_On_DelAct := 0.000000e+000; 
+   TmpAnn022.ActOk_OffDelSet := 0.000000e+000; 
+   TmpAnn022.ActOk_OffDelAct := 0.000000e+000; 
+   TmpAnn022.LivCou := 6026; 
+   TmpAnn031.Vrs := 0.000000e+000; 
+   TmpAnn031.Dsa := W#16#0; 
+   TmpAnn031.RunCmd := FALSE; 
+   TmpAnn031.StpCmd := FALSE; 
+   TmpAnn031.RstCmd := FALSE; 
+   TmpAnn031.RunStt := FALSE; 
+   TmpAnn031.Mode := 0; 
+   TmpAnn031.Set := 1.350000e+002; 
+   TmpAnn031.SetMne := 1.350000e+002; 
+   TmpAnn031.SetAux := 0.000000e+000; 
+   TmpAnn031.SetMod := W#16#0; 
+   TmpAnn031.SetSel := 3; 
+   TmpAnn031.Act := 3.490000e+001; 
+   TmpAnn031.Y := 0.000000e+000; 
+   TmpAnn031.X := 1.001000e+002; 
+   TmpAnn031.InpSen := TRUE; 
+   TmpAnn031.AlaMod := W#16#6; 
+   TmpAnn031.AlaSum := FALSE; 
+   TmpAnn031.AlaMin := FALSE; 
+   TmpAnn031.AlaMax := FALSE; 
+   TmpAnn031.AlaSen := FALSE; 
+   TmpAnn031.ActMin := 0.000000e+000; 
+   TmpAnn031.ActMax := 2.000000e+002; 
+   TmpAnn031.WarMod := W#16#3; 
+   TmpAnn031.WarSum := FALSE; 
+   TmpAnn031.WarMin := FALSE; 
+   TmpAnn031.WarMax := FALSE; 
+   TmpAnn031.X_Min := -3.000000e+000; 
+   TmpAnn031.X_Max := 3.000000e+000; 
+   TmpAnn031.SetMin := 0.000000e+000; 
+   TmpAnn031.SetMax := 3.000000e+002; 
+   TmpAnn031.ActOk := TRUE; 
+   TmpAnn031.ActOk_Sel := FALSE; 
+   TmpAnn031.ActOk_On_Set := 0.000000e+000; 
+   TmpAnn031.ActOk_OffSet := 0.000000e+000; 
+   TmpAnn031.ActOk_On_DelSet := 0.000000e+000; 
+   TmpAnn031.ActOk_On_DelAct := 0.000000e+000; 
+   TmpAnn031.ActOk_OffDelSet := 0.000000e+000; 
+   TmpAnn031.ActOk_OffDelAct := 0.000000e+000; 
+   TmpAnn031.LivCou := 6026; 
+   TmpAnn032.Vrs := 0.000000e+000; 
+   TmpAnn032.Dsa := W#16#0; 
+   TmpAnn032.RunCmd := FALSE; 
+   TmpAnn032.StpCmd := FALSE; 
+   TmpAnn032.RstCmd := FALSE; 
+   TmpAnn032.RunStt := FALSE; 
+   TmpAnn032.Mode := 0; 
+   TmpAnn032.Set := 1.350000e+002; 
+   TmpAnn032.SetMne := 1.350000e+002; 
+   TmpAnn032.SetAux := 1.301000e+002; 
+   TmpAnn032.SetMod := W#16#1; 
+   TmpAnn032.SetSel := 3; 
+   TmpAnn032.Act := 3.460000e+001; 
+   TmpAnn032.Y := 0.000000e+000; 
+   TmpAnn032.X := 1.004000e+002; 
+   TmpAnn032.InpSen := TRUE; 
+   TmpAnn032.AlaMod := W#16#6; 
+   TmpAnn032.AlaSum := FALSE; 
+   TmpAnn032.AlaMin := FALSE; 
+   TmpAnn032.AlaMax := FALSE; 
+   TmpAnn032.AlaSen := FALSE; 
+   TmpAnn032.ActMin := 0.000000e+000; 
+   TmpAnn032.ActMax := 2.000000e+002; 
+   TmpAnn032.WarMod := W#16#3; 
+   TmpAnn032.WarSum := FALSE; 
+   TmpAnn032.WarMin := FALSE; 
+   TmpAnn032.WarMax := FALSE; 
+   TmpAnn032.X_Min := -3.000000e+000; 
+   TmpAnn032.X_Max := 5.000000e+000; 
+   TmpAnn032.SetMin := 0.000000e+000; 
+   TmpAnn032.SetMax := 3.000000e+002; 
+   TmpAnn032.ActOk := TRUE; 
+   TmpAnn032.ActOk_Sel := FALSE; 
+   TmpAnn032.ActOk_On_Set := 0.000000e+000; 
+   TmpAnn032.ActOk_OffSet := 0.000000e+000; 
+   TmpAnn032.ActOk_On_DelSet := 0.000000e+000; 
+   TmpAnn032.ActOk_On_DelAct := 0.000000e+000; 
+   TmpAnn032.ActOk_OffDelSet := 0.000000e+000; 
+   TmpAnn032.ActOk_OffDelAct := 0.000000e+000; 
+   TmpAnn032.LivCou := 6027; 
+   PmtTmpAnn011.Vrs := 0.000000e+000; 
+   PmtTmpAnn011.AdrPsg := 3; 
+   PmtTmpAnn011.AdrZon := 24; 
+   PmtTmpAnn011.SndCou := 243; 
+   PmtTmpAnn011.RcvCou := 5168; 
+   PmtTmpAnn011.Dat.SndAcv := FALSE; 
+   PmtTmpAnn011.Dat.SndDon := FALSE; 
+   PmtTmpAnn011.Dat.RcvAcv := FALSE; 
+   PmtTmpAnn011.Dat.RcvDon := FALSE; 
+   PmtTmpAnn011.Dat.SetBit := FALSE; 
+   PmtTmpAnn011.Dat.ClrBit := FALSE; 
+   PmtTmpAnn011.Dat.Cmd := 0; 
+   PmtTmpAnn011.Dat.Stt := 0; 
+   PmtTmpAnn011.Dat.Nr := 0; 
+   PmtTmpAnn011.Dat.Value[0] := 0; 
+   PmtTmpAnn011.Dat.Value[1] := 99; 
+   PmtTmpAnn011.Dat.Value[2] := 0; 
+   PmtTmpAnn011.Dat.Value[3] := 100; 
+   PmtTmpAnn011.Dat.Value[4] := 1; 
+   PmtTmpAnn011.Dat.Value[5] := 1; 
+   PmtTmpAnn011.Dat.Value[6] := 0; 
+   PmtTmpAnn011.Dat.Value[7] := 30; 
+   PmtTmpAnn011.Dat.Value[8] := 50; 
+   PmtTmpAnn011.Dat.Value[9] := 200; 
+   PmtTmpAnn011.Dat.Value[10] := 0; 
+   PmtTmpAnn011.Dat.Value[11] := 0; 
+   PmtTmpAnn011.Dat.Value[12] := 0; 
+   PmtTmpAnn011.Dat.Value[13] := 0; 
+   PmtTmpAnn011.Dat.Value[14] := 1; 
+   PmtTmpAnn011.Dat.Value[15] := 80; 
+   PmtTmpAnn011.Dat.Value[16] := 0; 
+   PmtTmpAnn011.Dat.Value[17] := 200; 
+   PmtTmpAnn011.Dat.Value[18] := 100; 
+   PmtTmpAnn011.Dat.Value[19] := 99; 
+   PmtTmpAnn011.Dat.Value[20] := 255; 
+   PmtTmpAnn011.Dat.Value[21] := 500; 
+   PmtTmpAnn011.Dat.Value[22] := 100; 
+   PmtTmpAnn011.Dat.Value[23] := 20; 
+   PmtTmpAnn011.Dat.Value[24] := -20; 
+   PmtTmpAnn011.Dat.Value[25] := 0; 
+   PmtTmpAnn011.Dat.Value[26] := 0; 
+   PmtTmpAnn011.Dat.Value[27] := 0; 
+   PmtTmpAnn011.Dat.Value[28] := 0; 
+   PmtTmpAnn011.Dat.Value[29] := 0; 
+   PmtTmpAnn011.Dat.Value[30] := 0; 
+   PmtTmpAnn011.Dat.Value[31] := 0; 
+   PmtTmpAnn011.LivCou := 6027; 
+   PmtTmpAnn012.Vrs := 0.000000e+000; 
+   PmtTmpAnn012.AdrPsg := 3; 
+   PmtTmpAnn012.AdrZon := 25; 
+   PmtTmpAnn012.SndCou := 193; 
+   PmtTmpAnn012.RcvCou := 5069; 
+   PmtTmpAnn012.Dat.SndAcv := FALSE; 
+   PmtTmpAnn012.Dat.SndDon := FALSE; 
+   PmtTmpAnn012.Dat.RcvAcv := FALSE; 
+   PmtTmpAnn012.Dat.RcvDon := FALSE; 
+   PmtTmpAnn012.Dat.SetBit := FALSE; 
+   PmtTmpAnn012.Dat.ClrBit := FALSE; 
+   PmtTmpAnn012.Dat.Cmd := 0; 
+   PmtTmpAnn012.Dat.Stt := 0; 
+   PmtTmpAnn012.Dat.Nr := 0; 
+   PmtTmpAnn012.Dat.Value[0] := 0; 
+   PmtTmpAnn012.Dat.Value[1] := 98; 
+   PmtTmpAnn012.Dat.Value[2] := 0; 
+   PmtTmpAnn012.Dat.Value[3] := 100; 
+   PmtTmpAnn012.Dat.Value[4] := 65; 
+   PmtTmpAnn012.Dat.Value[5] := 65; 
+   PmtTmpAnn012.Dat.Value[6] := 0; 
+   PmtTmpAnn012.Dat.Value[7] := 20; 
+   PmtTmpAnn012.Dat.Value[8] := 50; 
+   PmtTmpAnn012.Dat.Value[9] := 200; 
+   PmtTmpAnn012.Dat.Value[10] := 0; 
+   PmtTmpAnn012.Dat.Value[11] := 0; 
+   PmtTmpAnn012.Dat.Value[12] := 0; 
+   PmtTmpAnn012.Dat.Value[13] := 0; 
+   PmtTmpAnn012.Dat.Value[14] := 65; 
+   PmtTmpAnn012.Dat.Value[15] := 40; 
+   PmtTmpAnn012.Dat.Value[16] := 0; 
+   PmtTmpAnn012.Dat.Value[17] := 400; 
+   PmtTmpAnn012.Dat.Value[18] := 100; 
+   PmtTmpAnn012.Dat.Value[19] := 99; 
+   PmtTmpAnn012.Dat.Value[20] := 255; 
+   PmtTmpAnn012.Dat.Value[21] := 500; 
+   PmtTmpAnn012.Dat.Value[22] := 100; 
+   PmtTmpAnn012.Dat.Value[23] := 20; 
+   PmtTmpAnn012.Dat.Value[24] := -20; 
+   PmtTmpAnn012.Dat.Value[25] := 0; 
+   PmtTmpAnn012.Dat.Value[26] := 0; 
+   PmtTmpAnn012.Dat.Value[27] := 0; 
+   PmtTmpAnn012.Dat.Value[28] := 0; 
+   PmtTmpAnn012.Dat.Value[29] := 0; 
+   PmtTmpAnn012.Dat.Value[30] := 0; 
+   PmtTmpAnn012.Dat.Value[31] := 0; 
+   PmtTmpAnn012.LivCou := 6027; 
+   PmtTmpAnn021.Vrs := 0.000000e+000; 
+   PmtTmpAnn021.AdrPsg := 3; 
+   PmtTmpAnn021.AdrZon := 26; 
+   PmtTmpAnn021.SndCou := 165; 
+   PmtTmpAnn021.RcvCou := 5041; 
+   PmtTmpAnn021.Dat.SndAcv := FALSE; 
+   PmtTmpAnn021.Dat.SndDon := FALSE; 
+   PmtTmpAnn021.Dat.RcvAcv := FALSE; 
+   PmtTmpAnn021.Dat.RcvDon := FALSE; 
+   PmtTmpAnn021.Dat.SetBit := FALSE; 
+   PmtTmpAnn021.Dat.ClrBit := FALSE; 
+   PmtTmpAnn021.Dat.Cmd := 0; 
+   PmtTmpAnn021.Dat.Stt := 0; 
+   PmtTmpAnn021.Dat.Nr := 0; 
+   PmtTmpAnn021.Dat.Value[0] := 0; 
+   PmtTmpAnn021.Dat.Value[1] := 100; 
+   PmtTmpAnn021.Dat.Value[2] := 0; 
+   PmtTmpAnn021.Dat.Value[3] := 100; 
+   PmtTmpAnn021.Dat.Value[4] := 1; 
+   PmtTmpAnn021.Dat.Value[5] := 1; 
+   PmtTmpAnn021.Dat.Value[6] := 0; 
+   PmtTmpAnn021.Dat.Value[7] := 20; 
+   PmtTmpAnn021.Dat.Value[8] := 50; 
+   PmtTmpAnn021.Dat.Value[9] := 200; 
+   PmtTmpAnn021.Dat.Value[10] := 0; 
+   PmtTmpAnn021.Dat.Value[11] := 0; 
+   PmtTmpAnn021.Dat.Value[12] := 0; 
+   PmtTmpAnn021.Dat.Value[13] := 0; 
+   PmtTmpAnn021.Dat.Value[14] := 1; 
+   PmtTmpAnn021.Dat.Value[15] := 50; 
+   PmtTmpAnn021.Dat.Value[16] := 0; 
+   PmtTmpAnn021.Dat.Value[17] := 500; 
+   PmtTmpAnn021.Dat.Value[18] := 50; 
+   PmtTmpAnn021.Dat.Value[19] := 99; 
+   PmtTmpAnn021.Dat.Value[20] := 255; 
+   PmtTmpAnn021.Dat.Value[21] := 500; 
+   PmtTmpAnn021.Dat.Value[22] := 100; 
+   PmtTmpAnn021.Dat.Value[23] := 20; 
+   PmtTmpAnn021.Dat.Value[24] := -20; 
+   PmtTmpAnn021.Dat.Value[25] := 0; 
+   PmtTmpAnn021.Dat.Value[26] := 0; 
+   PmtTmpAnn021.Dat.Value[27] := 0; 
+   PmtTmpAnn021.Dat.Value[28] := 0; 
+   PmtTmpAnn021.Dat.Value[29] := 0; 
+   PmtTmpAnn021.Dat.Value[30] := 0; 
+   PmtTmpAnn021.Dat.Value[31] := 0; 
+   PmtTmpAnn021.LivCou := 6029; 
+   PmtTmpAnn022.Vrs := 0.000000e+000; 
+   PmtTmpAnn022.AdrPsg := 3; 
+   PmtTmpAnn022.AdrZon := 27; 
+   PmtTmpAnn022.SndCou := 151; 
+   PmtTmpAnn022.RcvCou := 5029; 
+   PmtTmpAnn022.Dat.SndAcv := FALSE; 
+   PmtTmpAnn022.Dat.SndDon := FALSE; 
+   PmtTmpAnn022.Dat.RcvAcv := FALSE; 
+   PmtTmpAnn022.Dat.RcvDon := FALSE; 
+   PmtTmpAnn022.Dat.SetBit := FALSE; 
+   PmtTmpAnn022.Dat.ClrBit := FALSE; 
+   PmtTmpAnn022.Dat.Cmd := 0; 
+   PmtTmpAnn022.Dat.Stt := 0; 
+   PmtTmpAnn022.Dat.Nr := 0; 
+   PmtTmpAnn022.Dat.Value[0] := 0; 
+   PmtTmpAnn022.Dat.Value[1] := 100; 
+   PmtTmpAnn022.Dat.Value[2] := 0; 
+   PmtTmpAnn022.Dat.Value[3] := 100; 
+   PmtTmpAnn022.Dat.Value[4] := 1; 
+   PmtTmpAnn022.Dat.Value[5] := 1; 
+   PmtTmpAnn022.Dat.Value[6] := 0; 
+   PmtTmpAnn022.Dat.Value[7] := 20; 
+   PmtTmpAnn022.Dat.Value[8] := 50; 
+   PmtTmpAnn022.Dat.Value[9] := 200; 
+   PmtTmpAnn022.Dat.Value[10] := 0; 
+   PmtTmpAnn022.Dat.Value[11] := 0; 
+   PmtTmpAnn022.Dat.Value[12] := 0; 
+   PmtTmpAnn022.Dat.Value[13] := 0; 
+   PmtTmpAnn022.Dat.Value[14] := 1; 
+   PmtTmpAnn022.Dat.Value[15] := 40; 
+   PmtTmpAnn022.Dat.Value[16] := 0; 
+   PmtTmpAnn022.Dat.Value[17] := 400; 
+   PmtTmpAnn022.Dat.Value[18] := 100; 
+   PmtTmpAnn022.Dat.Value[19] := 99; 
+   PmtTmpAnn022.Dat.Value[20] := 255; 
+   PmtTmpAnn022.Dat.Value[21] := 500; 
+   PmtTmpAnn022.Dat.Value[22] := 100; 
+   PmtTmpAnn022.Dat.Value[23] := 20; 
+   PmtTmpAnn022.Dat.Value[24] := -20; 
+   PmtTmpAnn022.Dat.Value[25] := 0; 
+   PmtTmpAnn022.Dat.Value[26] := 0; 
+   PmtTmpAnn022.Dat.Value[27] := 0; 
+   PmtTmpAnn022.Dat.Value[28] := 0; 
+   PmtTmpAnn022.Dat.Value[29] := 0; 
+   PmtTmpAnn022.Dat.Value[30] := 0; 
+   PmtTmpAnn022.Dat.Value[31] := 0; 
+   PmtTmpAnn022.LivCou := 6029; 
+   PmtTmpAnn031.Vrs := 0.000000e+000; 
+   PmtTmpAnn031.AdrPsg := 3; 
+   PmtTmpAnn031.AdrZon := 28; 
+   PmtTmpAnn031.SndCou := 200; 
+   PmtTmpAnn031.RcvCou := 5077; 
+   PmtTmpAnn031.Dat.SndAcv := FALSE; 
+   PmtTmpAnn031.Dat.SndDon := FALSE; 
+   PmtTmpAnn031.Dat.RcvAcv := FALSE; 
+   PmtTmpAnn031.Dat.RcvDon := FALSE; 
+   PmtTmpAnn031.Dat.SetBit := FALSE; 
+   PmtTmpAnn031.Dat.ClrBit := FALSE; 
+   PmtTmpAnn031.Dat.Cmd := 0; 
+   PmtTmpAnn031.Dat.Stt := 0; 
+   PmtTmpAnn031.Dat.Nr := 0; 
+   PmtTmpAnn031.Dat.Value[0] := 0; 
+   PmtTmpAnn031.Dat.Value[1] := 100; 
+   PmtTmpAnn031.Dat.Value[2] := 0; 
+   PmtTmpAnn031.Dat.Value[3] := 100; 
+   PmtTmpAnn031.Dat.Value[4] := 1; 
+   PmtTmpAnn031.Dat.Value[5] := 1; 
+   PmtTmpAnn031.Dat.Value[6] := 0; 
+   PmtTmpAnn031.Dat.Value[7] := 20; 
+   PmtTmpAnn031.Dat.Value[8] := 50; 
+   PmtTmpAnn031.Dat.Value[9] := 200; 
+   PmtTmpAnn031.Dat.Value[10] := 0; 
+   PmtTmpAnn031.Dat.Value[11] := 0; 
+   PmtTmpAnn031.Dat.Value[12] := 0; 
+   PmtTmpAnn031.Dat.Value[13] := 0; 
+   PmtTmpAnn031.Dat.Value[14] := 1; 
+   PmtTmpAnn031.Dat.Value[15] := 40; 
+   PmtTmpAnn031.Dat.Value[16] := 0; 
+   PmtTmpAnn031.Dat.Value[17] := 500; 
+   PmtTmpAnn031.Dat.Value[18] := 100; 
+   PmtTmpAnn031.Dat.Value[19] := 99; 
+   PmtTmpAnn031.Dat.Value[20] := 255; 
+   PmtTmpAnn031.Dat.Value[21] := 500; 
+   PmtTmpAnn031.Dat.Value[22] := 100; 
+   PmtTmpAnn031.Dat.Value[23] := 50; 
+   PmtTmpAnn031.Dat.Value[24] := -50; 
+   PmtTmpAnn031.Dat.Value[25] := 0; 
+   PmtTmpAnn031.Dat.Value[26] := 0; 
+   PmtTmpAnn031.Dat.Value[27] := 0; 
+   PmtTmpAnn031.Dat.Value[28] := 0; 
+   PmtTmpAnn031.Dat.Value[29] := 0; 
+   PmtTmpAnn031.Dat.Value[30] := 0; 
+   PmtTmpAnn031.Dat.Value[31] := 0; 
+   PmtTmpAnn031.LivCou := 6029; 
+   PmtTmpAnn032.Vrs := 0.000000e+000; 
+   PmtTmpAnn032.AdrPsg := 3; 
+   PmtTmpAnn032.AdrZon := 29; 
+   PmtTmpAnn032.SndCou := 149; 
+   PmtTmpAnn032.RcvCou := 5068; 
+   PmtTmpAnn032.Dat.SndAcv := FALSE; 
+   PmtTmpAnn032.Dat.SndDon := FALSE; 
+   PmtTmpAnn032.Dat.RcvAcv := FALSE; 
+   PmtTmpAnn032.Dat.RcvDon := FALSE; 
+   PmtTmpAnn032.Dat.SetBit := FALSE; 
+   PmtTmpAnn032.Dat.ClrBit := FALSE; 
+   PmtTmpAnn032.Dat.Cmd := 0; 
+   PmtTmpAnn032.Dat.Stt := 0; 
+   PmtTmpAnn032.Dat.Nr := 0; 
+   PmtTmpAnn032.Dat.Value[0] := 0; 
+   PmtTmpAnn032.Dat.Value[1] := 100; 
+   PmtTmpAnn032.Dat.Value[2] := 0; 
+   PmtTmpAnn032.Dat.Value[3] := 100; 
+   PmtTmpAnn032.Dat.Value[4] := 1; 
+   PmtTmpAnn032.Dat.Value[5] := 1; 
+   PmtTmpAnn032.Dat.Value[6] := 0; 
+   PmtTmpAnn032.Dat.Value[7] := 20; 
+   PmtTmpAnn032.Dat.Value[8] := 50; 
+   PmtTmpAnn032.Dat.Value[9] := 200; 
+   PmtTmpAnn032.Dat.Value[10] := 0; 
+   PmtTmpAnn032.Dat.Value[11] := 0; 
+   PmtTmpAnn032.Dat.Value[12] := 0; 
+   PmtTmpAnn032.Dat.Value[13] := 0; 
+   PmtTmpAnn032.Dat.Value[14] := 1; 
+   PmtTmpAnn032.Dat.Value[15] := 40; 
+   PmtTmpAnn032.Dat.Value[16] := 0; 
+   PmtTmpAnn032.Dat.Value[17] := 400; 
+   PmtTmpAnn032.Dat.Value[18] := 100; 
+   PmtTmpAnn032.Dat.Value[19] := 99; 
+   PmtTmpAnn032.Dat.Value[20] := 255; 
+   PmtTmpAnn032.Dat.Value[21] := 500; 
+   PmtTmpAnn032.Dat.Value[22] := 100; 
+   PmtTmpAnn032.Dat.Value[23] := 20; 
+   PmtTmpAnn032.Dat.Value[24] := -20; 
+   PmtTmpAnn032.Dat.Value[25] := 0; 
+   PmtTmpAnn032.Dat.Value[26] := 0; 
+   PmtTmpAnn032.Dat.Value[27] := 0; 
+   PmtTmpAnn032.Dat.Value[28] := 0; 
+   PmtTmpAnn032.Dat.Value[29] := 0; 
+   PmtTmpAnn032.Dat.Value[30] := 0; 
+   PmtTmpAnn032.Dat.Value[31] := 0; 
+   PmtTmpAnn032.LivCou := 6029; 
+   FanAnn011.Vrs := 0.000000e+000; 
+   FanAnn011.Mode := 0; 
+   FanAnn011.Dsa := W#16#0; 
+   FanAnn011.RunCmd := FALSE; 
+   FanAnn011.StpCmd := FALSE; 
+   FanAnn011.FstCmd := FALSE; 
+   FanAnn011.RstCmd := FALSE; 
+   FanAnn011.RunStt := FALSE; 
+   FanAnn011.AlrMod := W#16#0; 
+   FanAnn011.AlaSum := FALSE; 
+   FanAnn011.AlaCbr := FALSE; 
+   FanAnn011.AlaSsw := FALSE; 
+   FanAnn011.AlaOvt := FALSE; 
+   FanAnn011.AlaSofSta := FALSE; 
+   FanAnn011.WarSum := FALSE; 
+   FanAnn011.WarPrsMin := FALSE; 
+   FanAnn011.InpCbr := FALSE; 
+   FanAnn011.InpSsw := FALSE; 
+   FanAnn011.InpPrsMin := FALSE; 
+   FanAnn011.InpOvt := FALSE; 
+   FanAnn011.InpSofSta := FALSE; 
+   FanAnn011.InpSofStaRdy := FALSE; 
+   FanAnn011.Out001 := FALSE; 
+   FanAnn011.Out002 := FALSE; 
+   FanAnn011.Out003 := FALSE; 
+   FanAnn011.StaTimSet := 0.000000e+000; 
+   FanAnn011.StaTimAct := 0.000000e+000; 
+   FanAnn011.CntDelTimSet := 0.000000e+000; 
+   FanAnn011.CntTimAct := 0.000000e+000; 
+   FanAnn011.FstDelTimSet := 0.000000e+000; 
+   FanAnn011.FstSlwTimAct := 0.000000e+000; 
+   FanAnn011.PrsMinDelSet := 0.000000e+000; 
+   FanAnn011.PrsMinDelAct := 0.000000e+000; 
+   FanAnn011.LivCou := 0; 
+   FanAnn012.Vrs := 0.000000e+000; 
+   FanAnn012.Mode := 0; 
+   FanAnn012.Dsa := W#16#0; 
+   FanAnn012.RunCmd := FALSE; 
+   FanAnn012.StpCmd := FALSE; 
+   FanAnn012.FstCmd := FALSE; 
+   FanAnn012.RstCmd := FALSE; 
+   FanAnn012.RunStt := FALSE; 
+   FanAnn012.AlrMod := W#16#0; 
+   FanAnn012.AlaSum := FALSE; 
+   FanAnn012.AlaCbr := FALSE; 
+   FanAnn012.AlaSsw := FALSE; 
+   FanAnn012.AlaOvt := FALSE; 
+   FanAnn012.AlaSofSta := FALSE; 
+   FanAnn012.WarSum := FALSE; 
+   FanAnn012.WarPrsMin := FALSE; 
+   FanAnn012.InpCbr := FALSE; 
+   FanAnn012.InpSsw := FALSE; 
+   FanAnn012.InpPrsMin := FALSE; 
+   FanAnn012.InpOvt := FALSE; 
+   FanAnn012.InpSofSta := FALSE; 
+   FanAnn012.InpSofStaRdy := FALSE; 
+   FanAnn012.Out001 := FALSE; 
+   FanAnn012.Out002 := FALSE; 
+   FanAnn012.Out003 := FALSE; 
+   FanAnn012.StaTimSet := 0.000000e+000; 
+   FanAnn012.StaTimAct := 0.000000e+000; 
+   FanAnn012.CntDelTimSet := 0.000000e+000; 
+   FanAnn012.CntTimAct := 0.000000e+000; 
+   FanAnn012.FstDelTimSet := 0.000000e+000; 
+   FanAnn012.FstSlwTimAct := 0.000000e+000; 
+   FanAnn012.PrsMinDelSet := 0.000000e+000; 
+   FanAnn012.PrsMinDelAct := 0.000000e+000; 
+   FanAnn012.LivCou := 0; 
+   FanAnn021.Vrs := 0.000000e+000; 
+   FanAnn021.Mode := 0; 
+   FanAnn021.Dsa := W#16#0; 
+   FanAnn021.RunCmd := FALSE; 
+   FanAnn021.StpCmd := FALSE; 
+   FanAnn021.FstCmd := FALSE; 
+   FanAnn021.RstCmd := FALSE; 
+   FanAnn021.RunStt := FALSE; 
+   FanAnn021.AlrMod := W#16#0; 
+   FanAnn021.AlaSum := FALSE; 
+   FanAnn021.AlaCbr := FALSE; 
+   FanAnn021.AlaSsw := FALSE; 
+   FanAnn021.AlaOvt := FALSE; 
+   FanAnn021.AlaSofSta := FALSE; 
+   FanAnn021.WarSum := FALSE; 
+   FanAnn021.WarPrsMin := FALSE; 
+   FanAnn021.InpCbr := FALSE; 
+   FanAnn021.InpSsw := FALSE; 
+   FanAnn021.InpPrsMin := FALSE; 
+   FanAnn021.InpOvt := FALSE; 
+   FanAnn021.InpSofSta := FALSE; 
+   FanAnn021.InpSofStaRdy := FALSE; 
+   FanAnn021.Out001 := FALSE; 
+   FanAnn021.Out002 := FALSE; 
+   FanAnn021.Out003 := FALSE; 
+   FanAnn021.StaTimSet := 0.000000e+000; 
+   FanAnn021.StaTimAct := 0.000000e+000; 
+   FanAnn021.CntDelTimSet := 0.000000e+000; 
+   FanAnn021.CntTimAct := 0.000000e+000; 
+   FanAnn021.FstDelTimSet := 0.000000e+000; 
+   FanAnn021.FstSlwTimAct := 0.000000e+000; 
+   FanAnn021.PrsMinDelSet := 0.000000e+000; 
+   FanAnn021.PrsMinDelAct := 0.000000e+000; 
+   FanAnn021.LivCou := 0; 
+   FanAnn022.Vrs := 0.000000e+000; 
+   FanAnn022.Mode := 0; 
+   FanAnn022.Dsa := W#16#0; 
+   FanAnn022.RunCmd := FALSE; 
+   FanAnn022.StpCmd := FALSE; 
+   FanAnn022.FstCmd := FALSE; 
+   FanAnn022.RstCmd := FALSE; 
+   FanAnn022.RunStt := FALSE; 
+   FanAnn022.AlrMod := W#16#0; 
+   FanAnn022.AlaSum := FALSE; 
+   FanAnn022.AlaCbr := FALSE; 
+   FanAnn022.AlaSsw := FALSE; 
+   FanAnn022.AlaOvt := FALSE; 
+   FanAnn022.AlaSofSta := FALSE; 
+   FanAnn022.WarSum := FALSE; 
+   FanAnn022.WarPrsMin := FALSE; 
+   FanAnn022.InpCbr := FALSE; 
+   FanAnn022.InpSsw := FALSE; 
+   FanAnn022.InpPrsMin := FALSE; 
+   FanAnn022.InpOvt := FALSE; 
+   FanAnn022.InpSofSta := FALSE; 
+   FanAnn022.InpSofStaRdy := FALSE; 
+   FanAnn022.Out001 := FALSE; 
+   FanAnn022.Out002 := FALSE; 
+   FanAnn022.Out003 := FALSE; 
+   FanAnn022.StaTimSet := 0.000000e+000; 
+   FanAnn022.StaTimAct := 0.000000e+000; 
+   FanAnn022.CntDelTimSet := 0.000000e+000; 
+   FanAnn022.CntTimAct := 0.000000e+000; 
+   FanAnn022.FstDelTimSet := 0.000000e+000; 
+   FanAnn022.FstSlwTimAct := 0.000000e+000; 
+   FanAnn022.PrsMinDelSet := 0.000000e+000; 
+   FanAnn022.PrsMinDelAct := 0.000000e+000; 
+   FanAnn022.LivCou := 0; 
+   FanAnn031.Vrs := 0.000000e+000; 
+   FanAnn031.Mode := 0; 
+   FanAnn031.Dsa := W#16#0; 
+   FanAnn031.RunCmd := FALSE; 
+   FanAnn031.StpCmd := FALSE; 
+   FanAnn031.FstCmd := FALSE; 
+   FanAnn031.RstCmd := FALSE; 
+   FanAnn031.RunStt := FALSE; 
+   FanAnn031.AlrMod := W#16#0; 
+   FanAnn031.AlaSum := FALSE; 
+   FanAnn031.AlaCbr := FALSE; 
+   FanAnn031.AlaSsw := FALSE; 
+   FanAnn031.AlaOvt := FALSE; 
+   FanAnn031.AlaSofSta := FALSE; 
+   FanAnn031.WarSum := FALSE; 
+   FanAnn031.WarPrsMin := FALSE; 
+   FanAnn031.InpCbr := FALSE; 
+   FanAnn031.InpSsw := FALSE; 
+   FanAnn031.InpPrsMin := FALSE; 
+   FanAnn031.InpOvt := FALSE; 
+   FanAnn031.InpSofSta := FALSE; 
+   FanAnn031.InpSofStaRdy := FALSE; 
+   FanAnn031.Out001 := FALSE; 
+   FanAnn031.Out002 := FALSE; 
+   FanAnn031.Out003 := FALSE; 
+   FanAnn031.StaTimSet := 0.000000e+000; 
+   FanAnn031.StaTimAct := 0.000000e+000; 
+   FanAnn031.CntDelTimSet := 0.000000e+000; 
+   FanAnn031.CntTimAct := 0.000000e+000; 
+   FanAnn031.FstDelTimSet := 0.000000e+000; 
+   FanAnn031.FstSlwTimAct := 0.000000e+000; 
+   FanAnn031.PrsMinDelSet := 0.000000e+000; 
+   FanAnn031.PrsMinDelAct := 0.000000e+000; 
+   FanAnn031.LivCou := 0; 
+   FanAnn032.Vrs := 0.000000e+000; 
+   FanAnn032.Mode := 0; 
+   FanAnn032.Dsa := W#16#0; 
+   FanAnn032.RunCmd := FALSE; 
+   FanAnn032.StpCmd := FALSE; 
+   FanAnn032.FstCmd := FALSE; 
+   FanAnn032.RstCmd := FALSE; 
+   FanAnn032.RunStt := FALSE; 
+   FanAnn032.AlrMod := W#16#0; 
+   FanAnn032.AlaSum := FALSE; 
+   FanAnn032.AlaCbr := FALSE; 
+   FanAnn032.AlaSsw := FALSE; 
+   FanAnn032.AlaOvt := FALSE; 
+   FanAnn032.AlaSofSta := FALSE; 
+   FanAnn032.WarSum := FALSE; 
+   FanAnn032.WarPrsMin := FALSE; 
+   FanAnn032.InpCbr := FALSE; 
+   FanAnn032.InpSsw := FALSE; 
+   FanAnn032.InpPrsMin := FALSE; 
+   FanAnn032.InpOvt := FALSE; 
+   FanAnn032.InpSofSta := FALSE; 
+   FanAnn032.InpSofStaRdy := FALSE; 
+   FanAnn032.Out001 := FALSE; 
+   FanAnn032.Out002 := FALSE; 
+   FanAnn032.Out003 := FALSE; 
+   FanAnn032.StaTimSet := 0.000000e+000; 
+   FanAnn032.StaTimAct := 0.000000e+000; 
+   FanAnn032.CntDelTimSet := 0.000000e+000; 
+   FanAnn032.CntTimAct := 0.000000e+000; 
+   FanAnn032.FstDelTimSet := 0.000000e+000; 
+   FanAnn032.FstSlwTimAct := 0.000000e+000; 
+   FanAnn032.PrsMinDelSet := 0.000000e+000; 
+   FanAnn032.PrsMinDelAct := 0.000000e+000; 
+   FanAnn032.LivCou := 0; 
+   Mst.Vrs := 0.000000e+000; 
+   Mst.AlrMod := W#16#0; 
+   Mst.AlaMst[1] := FALSE; 
+   Mst.AlaMst[2] := FALSE; 
+   Mst.AlaMst[3] := FALSE; 
+   Mst.AlaMst[4] := FALSE; 
+   Mst.AlaMst[5] := FALSE; 
+   Mst.AlaMst[6] := FALSE; 
+   Mst.AlaMst[7] := FALSE; 
+   Mst.AlaMst[8] := FALSE; 
+   Mst.AlaMst[9] := FALSE; 
+   Mst.AlaMst[10] := FALSE; 
+   Mst.AlaMst[11] := FALSE; 
+   Mst.AlaMst[12] := FALSE; 
+   Mst.AlaMst[13] := FALSE; 
+   Mst.AlaMst[14] := FALSE; 
+   Mst.AlaMst[15] := FALSE; 
+   Mst.AlaMst[16] := FALSE; 
+   Mst.InpMst[1] := FALSE; 
+   Mst.InpMst[2] := FALSE; 
+   Mst.InpMst[3] := FALSE; 
+   Mst.InpMst[4] := FALSE; 
+   Mst.InpMst[5] := FALSE; 
+   Mst.InpMst[6] := FALSE; 
+   Mst.InpMst[7] := FALSE; 
+   Mst.InpMst[8] := FALSE; 
+   Mst.InpMst[9] := FALSE; 
+   Mst.InpMst[10] := FALSE; 
+   Mst.InpMst[11] := FALSE; 
+   Mst.InpMst[12] := FALSE; 
+   Mst.InpMst[13] := FALSE; 
+   Mst.InpMst[14] := FALSE; 
+   Mst.InpMst[15] := FALSE; 
+   Mst.InpMst[16] := FALSE; 
+   Mst.InpMstCnt := FALSE; 
+   Mst.AlaMstCnt := FALSE; 
+   Mst.AlaSum := FALSE; 
+   Mst.SvcKey := FALSE; 
+   Mst.LivCou := 0; 
+   Drv001.Vrs := 0.000000e+000; 
+   Drv001.DrvAdr := 0; 
+   Drv001.Dsa := W#16#0; 
+   Drv001.Mode := W#16#0; 
+   Drv001.RunCmd := FALSE; 
+   Drv001.StpCmd := FALSE; 
+   Drv001.JogFwdCmd := FALSE; 
+   Drv001.JogBkwCmd := FALSE; 
+   Drv001.Aut001Cmd := FALSE; 
+   Drv001.Aut002Cmd := FALSE; 
+   Drv001.RstCmd := FALSE; 
+   Drv001.RunStt := FALSE; 
+   Drv001.SpdUp := FALSE; 
+   Drv001.RamRun := FALSE; 
+   Drv001.AlrMod := W#16#0; 
+   Drv001.AlaSum := FALSE; 
+   Drv001.AlaDrv := FALSE; 
+   Drv001.AlaCom := FALSE; 
+   Drv001.AlaCbr := FALSE; 
+   Drv001.AlaSsw := FALSE; 
+   Drv001.AlaTimOut := FALSE; 
+   Drv001.AlaExtFlt := FALSE; 
+   Drv001.AlaDrvBlo := FALSE; 
+   Drv001.WarSum := FALSE; 
+   Drv001.InpDrvFlt := FALSE; 
+   Drv001.InpDrvCom := FALSE; 
+   Drv001.InpCbr := FALSE; 
+   Drv001.InpSsw := FALSE; 
+   Drv001.InpDrvRdy := FALSE; 
+   Drv001.InpDrvRun := FALSE; 
+   Drv001.InpDrvAla := FALSE; 
+   Drv001.InpExtFlt := FALSE; 
+   Drv001.InpExtWar := FALSE; 
+   Drv001.InpOvs := FALSE; 
+   Drv001.StaTimSet := 0.000000e+000; 
+   Drv001.StaTimAct := 0.000000e+000; 
+   Drv001.DrvBloDelSet := 0.000000e+000; 
+   Drv001.DrvBloDelAct := 0.000000e+000; 
+   Drv001.SpdSet := 0.000000e+000; 
+   Drv001.SpdAct := 0.000000e+000; 
+   Drv001.SpdCal := 0.000000e+000; 
+   Drv001.SpdMas := 0.000000e+000; 
+   Drv001.SpdOut := 0.000000e+000; 
+   Drv001.SpdSta := 0.000000e+000; 
+   Drv001.SpdOff := 0.000000e+000; 
+   Drv001.SpdAut001 := 0.000000e+000; 
+   Drv001.SpdAut002 := 0.000000e+000; 
+   Drv001.SpdJogFwd := 0.000000e+000; 
+   Drv001.SpdJogBkw := 0.000000e+000; 
+   Drv001.SpdSetMin := 0.000000e+000; 
+   Drv001.SpdSetMax := 0.000000e+000; 
+   Drv001.FacSpdMax := 0.000000e+000; 
+   Drv001.LoaPosSet := 0.000000e+000; 
+   Drv001.LoaNegSet := 0.000000e+000; 
+   Drv001.LoaAct := 0.000000e+000; 
+   Drv001.LoaSetMin := 0.000000e+000; 
+   Drv001.LoaSetMax := 0.000000e+000; 
+   Drv001.FacLoaMax := 0.000000e+000; 
+   Drv001.PowAct := 0.000000e+000; 
+   Drv001.FacPowMax := 0.000000e+000; 
+   Drv001.TmpAct := 0.000000e+000; 
+   Drv001.FacTmpMax := 0.000000e+000; 
+   Drv001.DrvFltNum := 0; 
+   Drv001.DrvWarNum := 0; 
+   Drv001.IO_Inp[0] := FALSE; 
+   Drv001.IO_Inp[1] := FALSE; 
+   Drv001.IO_Inp[2] := FALSE; 
+   Drv001.IO_Inp[3] := FALSE; 
+   Drv001.IO_Inp[4] := FALSE; 
+   Drv001.IO_Inp[5] := FALSE; 
+   Drv001.IO_Inp[6] := FALSE; 
+   Drv001.IO_Inp[7] := FALSE; 
+   Drv001.IO_Inp[8] := FALSE; 
+   Drv001.IO_Inp[9] := FALSE; 
+   Drv001.IO_Inp[10] := FALSE; 
+   Drv001.IO_Inp[11] := FALSE; 
+   Drv001.IO_Inp[12] := FALSE; 
+   Drv001.IO_Inp[13] := FALSE; 
+   Drv001.IO_Inp[14] := FALSE; 
+   Drv001.IO_Inp[15] := FALSE; 
+   Drv001.IO_Out[0] := FALSE; 
+   Drv001.IO_Out[1] := FALSE; 
+   Drv001.IO_Out[2] := FALSE; 
+   Drv001.IO_Out[3] := FALSE; 
+   Drv001.IO_Out[4] := FALSE; 
+   Drv001.IO_Out[5] := FALSE; 
+   Drv001.IO_Out[6] := FALSE; 
+   Drv001.IO_Out[7] := FALSE; 
+   Drv001.IO_Out[8] := FALSE; 
+   Drv001.IO_Out[9] := FALSE; 
+   Drv001.IO_Out[10] := FALSE; 
+   Drv001.IO_Out[11] := FALSE; 
+   Drv001.IO_Out[12] := FALSE; 
+   Drv001.IO_Out[13] := FALSE; 
+   Drv001.IO_Out[14] := FALSE; 
+   Drv001.IO_Out[15] := FALSE; 
+   Drv001.OutRun := FALSE; 
+   Drv001.OutFstStp := FALSE; 
+   Drv001.PlsOn := FALSE; 
+   Drv001.PlsOff := FALSE; 
+   Drv001.PlsHlp := FALSE; 
+   Drv001.MacRamUp := 0.000000e+000; 
+   Drv001.MacRamDwn := 0.000000e+000; 
+   Drv001.PrcRamUp := 0.000000e+000; 
+   Drv001.PrcRamDwn := 0.000000e+000; 
+   Drv001.FacRat := 0.000000e+000; 
+   Drv001.FacSlv := 0.000000e+000; 
+   Drv001.FacCtl := 0.000000e+000; 
+   Drv001.FacCtlInf := 0.000000e+000; 
+   Drv001.FacMecInf := 0.000000e+000; 
+   Drv001.FacOvs := 0.000000e+000; 
+   Drv001.LivCou := 0; 
+END_DATA_BLOCK
+

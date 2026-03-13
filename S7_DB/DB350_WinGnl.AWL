@@ -1,0 +1,87 @@
+TYPE UDT 103
+VERSION : 0.1
+
+
+  STRUCT 	
+   SND : STRUCT 	
+    AveThicknes : WORD ;	
+    WebWith : WORD ;	
+    SND2 : WORD ;	
+    SND3 : WORD ;	
+    SND4 : WORD ;	
+    SND5 : WORD ;	
+    SND6 : WORD ;	
+    SND7 : WORD ;	
+    SND8 : WORD ;	
+    SND9 : WORD ;	
+    SND10 : WORD ;	
+    SND11 : WORD ;	
+    SND12 : WORD ;	
+    SND13 : WORD ;	
+    SND14 : WORD ;	
+    SND15 : WORD ;	
+   END_STRUCT ;	
+   RCV : STRUCT 	
+    RCV0 : WORD ;	
+    RCV1 : WORD ;	
+    RCV2 : WORD ;	
+    RCV3 : WORD ;	
+    RCV4 : WORD ;	
+    RCV5 : WORD ;	
+    RCV6 : WORD ;	
+    RCV7 : WORD ;	
+    RCV8 : WORD ;	
+    RCV9 : WORD ;	
+    RCV10 : WORD ;	
+    RCV11 : WORD ;	
+    RCV12 : WORD ;	
+    RCV13 : WORD ;	
+    RCV14 : WORD ;	
+    RCV15 : WORD ;	
+   END_STRUCT ;	
+  END_STRUCT ;	
+END_TYPE
+
+DATA_BLOCK DB 350
+TITLE =
+VERSION : 0.1
+
+
+  STRUCT 	
+   Com_Win : UDT 103;	
+  END_STRUCT ;	
+BEGIN
+   Com_Win.SND.AveThicknes := W#16#0; 
+   Com_Win.SND.WebWith := W#16#0; 
+   Com_Win.SND.SND2 := W#16#0; 
+   Com_Win.SND.SND3 := W#16#0; 
+   Com_Win.SND.SND4 := W#16#0; 
+   Com_Win.SND.SND5 := W#16#0; 
+   Com_Win.SND.SND6 := W#16#0; 
+   Com_Win.SND.SND7 := W#16#0; 
+   Com_Win.SND.SND8 := W#16#0; 
+   Com_Win.SND.SND9 := W#16#0; 
+   Com_Win.SND.SND10 := W#16#0; 
+   Com_Win.SND.SND11 := W#16#0; 
+   Com_Win.SND.SND12 := W#16#0; 
+   Com_Win.SND.SND13 := W#16#0; 
+   Com_Win.SND.SND14 := W#16#0; 
+   Com_Win.SND.SND15 := W#16#0; 
+   Com_Win.RCV.RCV0 := W#16#0; 
+   Com_Win.RCV.RCV1 := W#16#0; 
+   Com_Win.RCV.RCV2 := W#16#0; 
+   Com_Win.RCV.RCV3 := W#16#0; 
+   Com_Win.RCV.RCV4 := W#16#0; 
+   Com_Win.RCV.RCV5 := W#16#0; 
+   Com_Win.RCV.RCV6 := W#16#0; 
+   Com_Win.RCV.RCV7 := W#16#0; 
+   Com_Win.RCV.RCV8 := W#16#0; 
+   Com_Win.RCV.RCV9 := W#16#0; 
+   Com_Win.RCV.RCV10 := W#16#0; 
+   Com_Win.RCV.RCV11 := W#16#0; 
+   Com_Win.RCV.RCV12 := W#16#0; 
+   Com_Win.RCV.RCV13 := W#16#0; 
+   Com_Win.RCV.RCV14 := W#16#0; 
+   Com_Win.RCV.RCV15 := W#16#0; 
+END_DATA_BLOCK
+

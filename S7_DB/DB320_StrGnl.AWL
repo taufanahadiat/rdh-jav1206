@@ -1,0 +1,118 @@
+TYPE UDT 25
+// UDT727
+
+
+  STRUCT 	// status
+   InpOb_080 : BOOL ;	
+   InpOb_081 : BOOL ;	
+   InpOb_082 : BOOL ;	
+   InpOb_083 : BOOL ;	
+   InpOb_084 : BOOL ;	
+   InpOb_085 : BOOL ;	
+   InpOb_086 : BOOL ;	
+   InpOb_087 : BOOL ;	
+   InpOb_100 : BOOL ;	
+   InpOb_121 : BOOL ;	
+   InpOb_122 : BOOL ;	// alarms
+   AlrMod : WORD ;	
+   AlaOb_080 : BOOL ;	
+   AlaOb_081 : BOOL ;	
+   AlaOb_082 : BOOL ;	
+   AlaOb_083 : BOOL ;	
+   AlaOb_084 : BOOL ;	
+   AlaOb_085 : BOOL ;	
+   AlaOb_086 : BOOL ;	
+   AlaOb_087 : BOOL ;	
+   AlaOb_100 : BOOL ;	
+   AlaOb_121 : BOOL ;	
+   AlaOb_122 : BOOL ;	// reset, gbl stop, ...
+   Rst : BOOL ;	
+   PlcGblStp : BOOL ;	//actual value
+   StnNum : INT ;	
+   Io_Num : REAL ;	
+   Io_Typ : INT ;	
+   Pw_Num : REAL ;	
+   Pw_Typ : INT ;	
+   BlkNum : INT ;	
+   BlkTyp : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 61
+// udt61
+
+
+  STRUCT 	
+   Vrs : REAL ;	
+   Inp : BOOL ;	
+   Rst : BOOL ;	
+   Ala : BOOL ;	
+   Hrn : BOOL ;	
+   LivCou : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+DATA_BLOCK DB 320
+TITLE =
+VERSION : 0.0
+
+
+  STRUCT 	
+   Sys : UDT 25;	
+   LnkExt : UDT 61;	
+   LnkStr : UDT 61;	
+   LnkWin : UDT 61;	
+  END_STRUCT ;	
+BEGIN
+   Sys.InpOb_080 := FALSE; 
+   Sys.InpOb_081 := FALSE; 
+   Sys.InpOb_082 := FALSE; 
+   Sys.InpOb_083 := FALSE; 
+   Sys.InpOb_084 := FALSE; 
+   Sys.InpOb_085 := FALSE; 
+   Sys.InpOb_086 := FALSE; 
+   Sys.InpOb_087 := FALSE; 
+   Sys.InpOb_100 := FALSE; 
+   Sys.InpOb_121 := FALSE; 
+   Sys.InpOb_122 := FALSE; 
+   Sys.AlrMod := W#16#0; 
+   Sys.AlaOb_080 := FALSE; 
+   Sys.AlaOb_081 := FALSE; 
+   Sys.AlaOb_082 := FALSE; 
+   Sys.AlaOb_083 := FALSE; 
+   Sys.AlaOb_084 := FALSE; 
+   Sys.AlaOb_085 := FALSE; 
+   Sys.AlaOb_086 := FALSE; 
+   Sys.AlaOb_087 := FALSE; 
+   Sys.AlaOb_100 := FALSE; 
+   Sys.AlaOb_121 := FALSE; 
+   Sys.AlaOb_122 := FALSE; 
+   Sys.Rst := FALSE; 
+   Sys.PlcGblStp := FALSE; 
+   Sys.StnNum := 0; 
+   Sys.Io_Num := 0.000000e+000; 
+   Sys.Io_Typ := 0; 
+   Sys.Pw_Num := 0.000000e+000; 
+   Sys.Pw_Typ := 0; 
+   Sys.BlkNum := 0; 
+   Sys.BlkTyp := 0; 
+   LnkExt.Vrs := 0.000000e+000; 
+   LnkExt.Inp := FALSE; 
+   LnkExt.Rst := FALSE; 
+   LnkExt.Ala := FALSE; 
+   LnkExt.Hrn := FALSE; 
+   LnkExt.LivCou := 0; 
+   LnkStr.Vrs := 0.000000e+000; 
+   LnkStr.Inp := FALSE; 
+   LnkStr.Rst := FALSE; 
+   LnkStr.Ala := FALSE; 
+   LnkStr.Hrn := FALSE; 
+   LnkStr.LivCou := 0; 
+   LnkWin.Vrs := 0.000000e+000; 
+   LnkWin.Inp := FALSE; 
+   LnkWin.Rst := FALSE; 
+   LnkWin.Ala := FALSE; 
+   LnkWin.Hrn := FALSE; 
+   LnkWin.LivCou := 0; 
+END_DATA_BLOCK
+

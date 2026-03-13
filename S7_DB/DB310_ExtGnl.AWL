@@ -1,0 +1,267 @@
+TYPE UDT 62
+// udt62
+
+
+  STRUCT 	
+   Vrs : REAL ;	
+   AlrMod : WORD ;	
+   AlaMst : ARRAY  [1 .. 16 ] OF BOOL ;	
+   InpMst : ARRAY  [1 .. 16 ] OF BOOL ;	
+   InpMstCnt : BOOL ;	
+   AlaMstCnt : BOOL ;	
+   AlaSum : BOOL ;	
+   SvcKey : BOOL ;	
+   LivCou : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 61
+// udt61
+
+
+  STRUCT 	
+   Vrs : REAL ;	
+   Inp : BOOL ;	
+   Rst : BOOL ;	
+   Ala : BOOL ;	
+   Hrn : BOOL ;	
+   LivCou : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 80
+AUTHOR : '13724'
+VERSION : 1.0
+
+
+  STRUCT 	
+   Vrs : REAL ;	
+   Mode : INT ;	// mode
+   WarMelGbxPumOff : BOOL ;	// warning melt gearbox pump off
+   WarMetGbxPumOff : BOOL ;	// warning metering gearbox pump off
+   WarMelTmpMin : BOOL ;	// warning melt temperature minimum
+   WarMetTmpMin : BOOL ;	// warning metering temperature minimum
+   WarSenLvlMin : BOOL ;	// warning sensor level minimum
+   WarHopWeiMin : BOOL ;	// warning hopper weight minimum
+   WarMelDrvSpdMax : BOOL ;	// warning melt drive speed maximum
+   WarPrsNoGran : BOOL ;	// warning sensor no granulate
+   AlrMod : WORD ;	// alarm mode
+   AlaMelGbxPumOff : BOOL ;	// alarm melt gearbox pump off
+   AlaMetGbxPumOff : BOOL ;	// alarm metering gearbox pump off
+   AlaMelTmpMin : BOOL ;	// alarm melt temperature minimum
+   AlaMetTmpMin : BOOL ;	// alarm metering temperature minimum
+   AlaSenLvlMin : BOOL ;	// alarm sensor level minimum
+   AlaHopWeiMin : BOOL ;	// alarm hopper weight minimum
+   AlaMelDrvSpdMax : BOOL ;	// alarm melt drive speed maximum
+   AlaPrsNoGran : BOOL ;	// alarm sensor no granulate
+   MelGbxPumOffDelSet : REAL ;	// melt gearbox pump off delay set
+   MelGbxPumOffDelAct : REAL ;	// melt gearbox pump off delay act
+   MetGbxPumOffDelSet : REAL ;	// metering gearbox pump off delay set
+   MetGbxPumOffDelAct : REAL ;	// metering gearbox pump off delay act
+   MelTmpMinDelSet : REAL ;	// melt temperature delay set
+   MelTmpMinDelAct : REAL ;	// melt temperature delay act
+   MetTmpMinDelSet : REAL ;	// metering temperature delay set
+   MetTmpMinDelAct : REAL ;	// metering temperature delay act
+   PrsNoGranDelSet : REAL ;	// pressure no granulate delay set
+   PrsNoGranDelAct : REAL ;	// pressure no granulate delay act
+   SenLvlMinDelSet : REAL ;	// sensor level min delay set
+   SenLvlMinDelAct : REAL ;	// sensor level min delay act
+   HopWeiMinDelSet : REAL ;	// hopper weight min delay set
+   HopWeiMinDelAct : REAL ;	// hopper weight min delay act
+   MelDrvSpdMaxDelSet : REAL ;	// melt drive speed max delay set
+   MelDrvSpdMaxDelAct : REAL ;	// melt drive speed max delay act
+   NoGranAutEmpDelSet : REAL ;	// no granulate auto empty delay set
+   NoGranAutEmpDelAct : REAL ;	// no granulate auto empty delay set
+   PrsMinSet : REAL ;	// pressure min set
+   MneHopWeiMinSet : REAL ;	// main hopper weight min set
+   MelDrvSpdMaxSet : REAL ;	// melt drive speed max set
+   PrsCtlStaSet : REAL ;	// pressure control start set
+   LivCou : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+TYPE UDT 86
+AUTHOR : '13724'
+VERSION : 1.0
+
+
+  STRUCT 	
+   Vrs : REAL ;	
+   Mode : INT ;	// mode
+   WarCox1GbxPumOff : BOOL ;	// warning coextruder 1 gearbox pump off
+   WarCox2GbxPumOff : BOOL ;	// warning coextruder 2 gearbox pump off
+   WarCox1HopLvlMin : BOOL ;	// warning hopper level minimum
+   WarCox2HopLvlMin : BOOL ;	// warning hopper level minimum
+   AlrMod : WORD ;	// alarm mode
+   AlaCox1GbxPumOff : BOOL ;	// alarm coextruder 1 gearbox pump off
+   AlaCox2GbxPumOff : BOOL ;	// alarm coextruder 2 gearbox pump off
+   AlaCox1HopLvlMin : BOOL ;	// alarm coextruder 1 hopper level minimum
+   AlaCox2HopLvlMin : BOOL ;	// alarm coextruder 2 hopper level minimum
+   Cox1GbxPumOffDelSet : REAL ;	// coextruder 1 gearbox pump off delay set
+   Cox1GbxPumOffDelAct : REAL ;	// coextruder 1 gearbox pump off delay act
+   Cox2GbxPumOffDelSet : REAL ;	// coextruder 2 gearbox pump off delay set
+   Cox2GbxPumOffDelAct : REAL ;	// coextruder 2 gearbox pump off delay act
+   Cox1HopLvlMinDelSet : REAL ;	// hopper level min delay set
+   Cox1HopLvlMinDelAct : REAL ;	// hopper level min delay act
+   Cox2HopLvlMinDelSet : REAL ;	// hopper level min delay set
+   Cox2HopLvlMinDelAct : REAL ;	// hopper level min delay act
+   LivCou : INT ;	
+  END_STRUCT ;	
+END_TYPE
+
+DATA_BLOCK DB 310
+TITLE =
+VERSION : 0.0
+
+
+  STRUCT 	
+   Mst : UDT 62;	
+   PwsAc1Opn : UDT 61;	
+   PwsAc1Off : UDT 61;	
+   Psu220_Ac : UDT 61;	
+   Psu024_Dc : UDT 61;	
+   Sbf_Ac : UDT 61;	
+   LnkPlcStr : UDT 61;	// drive interlocks
+   ExtDrvCtl : UDT 80;	
+   CoxDrvCtl : UDT 86;	
+  END_STRUCT ;	
+BEGIN
+   Mst.Vrs := 0.000000e+000; 
+   Mst.AlrMod := W#16#3; 
+   Mst.AlaMst[1] := FALSE; 
+   Mst.AlaMst[2] := FALSE; 
+   Mst.AlaMst[3] := FALSE; 
+   Mst.AlaMst[4] := FALSE; 
+   Mst.AlaMst[5] := FALSE; 
+   Mst.AlaMst[6] := FALSE; 
+   Mst.AlaMst[7] := FALSE; 
+   Mst.AlaMst[8] := FALSE; 
+   Mst.AlaMst[9] := FALSE; 
+   Mst.AlaMst[10] := FALSE; 
+   Mst.AlaMst[11] := FALSE; 
+   Mst.AlaMst[12] := FALSE; 
+   Mst.AlaMst[13] := FALSE; 
+   Mst.AlaMst[14] := FALSE; 
+   Mst.AlaMst[15] := FALSE; 
+   Mst.AlaMst[16] := FALSE; 
+   Mst.InpMst[1] := TRUE; 
+   Mst.InpMst[2] := TRUE; 
+   Mst.InpMst[3] := FALSE; 
+   Mst.InpMst[4] := FALSE; 
+   Mst.InpMst[5] := FALSE; 
+   Mst.InpMst[6] := FALSE; 
+   Mst.InpMst[7] := FALSE; 
+   Mst.InpMst[8] := FALSE; 
+   Mst.InpMst[9] := FALSE; 
+   Mst.InpMst[10] := FALSE; 
+   Mst.InpMst[11] := FALSE; 
+   Mst.InpMst[12] := FALSE; 
+   Mst.InpMst[13] := FALSE; 
+   Mst.InpMst[14] := FALSE; 
+   Mst.InpMst[15] := FALSE; 
+   Mst.InpMst[16] := FALSE; 
+   Mst.InpMstCnt := FALSE; 
+   Mst.AlaMstCnt := TRUE; 
+   Mst.AlaSum := FALSE; 
+   Mst.SvcKey := TRUE; 
+   Mst.LivCou := 4752; 
+   PwsAc1Opn.Vrs := 0.000000e+000; 
+   PwsAc1Opn.Inp := TRUE; 
+   PwsAc1Opn.Rst := FALSE; 
+   PwsAc1Opn.Ala := FALSE; 
+   PwsAc1Opn.Hrn := FALSE; 
+   PwsAc1Opn.LivCou := 4752; 
+   PwsAc1Off.Vrs := 0.000000e+000; 
+   PwsAc1Off.Inp := TRUE; 
+   PwsAc1Off.Rst := FALSE; 
+   PwsAc1Off.Ala := FALSE; 
+   PwsAc1Off.Hrn := FALSE; 
+   PwsAc1Off.LivCou := 4752; 
+   Psu220_Ac.Vrs := 0.000000e+000; 
+   Psu220_Ac.Inp := TRUE; 
+   Psu220_Ac.Rst := FALSE; 
+   Psu220_Ac.Ala := FALSE; 
+   Psu220_Ac.Hrn := FALSE; 
+   Psu220_Ac.LivCou := 4752; 
+   Psu024_Dc.Vrs := 0.000000e+000; 
+   Psu024_Dc.Inp := TRUE; 
+   Psu024_Dc.Rst := FALSE; 
+   Psu024_Dc.Ala := FALSE; 
+   Psu024_Dc.Hrn := FALSE; 
+   Psu024_Dc.LivCou := 4752; 
+   Sbf_Ac.Vrs := 0.000000e+000; 
+   Sbf_Ac.Inp := TRUE; 
+   Sbf_Ac.Rst := FALSE; 
+   Sbf_Ac.Ala := FALSE; 
+   Sbf_Ac.Hrn := FALSE; 
+   Sbf_Ac.LivCou := 4752; 
+   LnkPlcStr.Vrs := 0.000000e+000; 
+   LnkPlcStr.Inp := TRUE; 
+   LnkPlcStr.Rst := FALSE; 
+   LnkPlcStr.Ala := FALSE; 
+   LnkPlcStr.Hrn := FALSE; 
+   LnkPlcStr.LivCou := 23677; 
+   ExtDrvCtl.Vrs := 0.000000e+000; 
+   ExtDrvCtl.Mode := 4; 
+   ExtDrvCtl.WarMelGbxPumOff := FALSE; 
+   ExtDrvCtl.WarMetGbxPumOff := FALSE; 
+   ExtDrvCtl.WarMelTmpMin := FALSE; 
+   ExtDrvCtl.WarMetTmpMin := FALSE; 
+   ExtDrvCtl.WarSenLvlMin := FALSE; 
+   ExtDrvCtl.WarHopWeiMin := FALSE; 
+   ExtDrvCtl.WarMelDrvSpdMax := FALSE; 
+   ExtDrvCtl.WarPrsNoGran := FALSE; 
+   ExtDrvCtl.AlrMod := W#16#1BF; 
+   ExtDrvCtl.AlaMelGbxPumOff := FALSE; 
+   ExtDrvCtl.AlaMetGbxPumOff := FALSE; 
+   ExtDrvCtl.AlaMelTmpMin := FALSE; 
+   ExtDrvCtl.AlaMetTmpMin := FALSE; 
+   ExtDrvCtl.AlaSenLvlMin := FALSE; 
+   ExtDrvCtl.AlaHopWeiMin := FALSE; 
+   ExtDrvCtl.AlaMelDrvSpdMax := FALSE; 
+   ExtDrvCtl.AlaPrsNoGran := FALSE; 
+   ExtDrvCtl.MelGbxPumOffDelSet := 3.000000e+002; 
+   ExtDrvCtl.MelGbxPumOffDelAct := 0.000000e+000; 
+   ExtDrvCtl.MetGbxPumOffDelSet := 3.000000e+002; 
+   ExtDrvCtl.MetGbxPumOffDelAct := 0.000000e+000; 
+   ExtDrvCtl.MelTmpMinDelSet := 3.000000e+002; 
+   ExtDrvCtl.MelTmpMinDelAct := 0.000000e+000; 
+   ExtDrvCtl.MetTmpMinDelSet := 3.000000e+003; 
+   ExtDrvCtl.MetTmpMinDelAct := 0.000000e+000; 
+   ExtDrvCtl.PrsNoGranDelSet := 5.000000e+000; 
+   ExtDrvCtl.PrsNoGranDelAct := 0.000000e+000; 
+   ExtDrvCtl.SenLvlMinDelSet := 6.000000e+001; 
+   ExtDrvCtl.SenLvlMinDelAct := 0.000000e+000; 
+   ExtDrvCtl.HopWeiMinDelSet := 5.000000e+000; 
+   ExtDrvCtl.HopWeiMinDelAct := 0.000000e+000; 
+   ExtDrvCtl.MelDrvSpdMaxDelSet := 6.000000e+002; 
+   ExtDrvCtl.MelDrvSpdMaxDelAct := 0.000000e+000; 
+   ExtDrvCtl.NoGranAutEmpDelSet := 0.000000e+000; 
+   ExtDrvCtl.NoGranAutEmpDelAct := 0.000000e+000; 
+   ExtDrvCtl.PrsMinSet := 2.100000e+001; 
+   ExtDrvCtl.MneHopWeiMinSet := 6.000000e+001; 
+   ExtDrvCtl.MelDrvSpdMaxSet := 1.840000e+002; 
+   ExtDrvCtl.PrsCtlStaSet := 2.000000e+000; 
+   ExtDrvCtl.LivCou := 4752; 
+   CoxDrvCtl.Vrs := 0.000000e+000; 
+   CoxDrvCtl.Mode := 0; 
+   CoxDrvCtl.WarCox1GbxPumOff := FALSE; 
+   CoxDrvCtl.WarCox2GbxPumOff := FALSE; 
+   CoxDrvCtl.WarCox1HopLvlMin := FALSE; 
+   CoxDrvCtl.WarCox2HopLvlMin := FALSE; 
+   CoxDrvCtl.AlrMod := W#16#1F; 
+   CoxDrvCtl.AlaCox1GbxPumOff := FALSE; 
+   CoxDrvCtl.AlaCox2GbxPumOff := FALSE; 
+   CoxDrvCtl.AlaCox1HopLvlMin := FALSE; 
+   CoxDrvCtl.AlaCox2HopLvlMin := FALSE; 
+   CoxDrvCtl.Cox1GbxPumOffDelSet := 3.000000e+002; 
+   CoxDrvCtl.Cox1GbxPumOffDelAct := 0.000000e+000; 
+   CoxDrvCtl.Cox2GbxPumOffDelSet := 3.000000e+002; 
+   CoxDrvCtl.Cox2GbxPumOffDelAct := 0.000000e+000; 
+   CoxDrvCtl.Cox1HopLvlMinDelSet := 6.000000e+002; 
+   CoxDrvCtl.Cox1HopLvlMinDelAct := 0.000000e+000; 
+   CoxDrvCtl.Cox2HopLvlMinDelSet := 6.000000e+002; 
+   CoxDrvCtl.Cox2HopLvlMinDelAct := 0.000000e+000; 
+   CoxDrvCtl.LivCou := 6277; 
+END_DATA_BLOCK
+

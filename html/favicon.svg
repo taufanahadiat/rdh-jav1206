@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">LINE-5 Manufacturing Icon</title>
+  <desc id="desc">Modern manufacturing machine favicon with a CNC-style gantry and work platform.</desc>
+  <defs>
+    <linearGradient id="bg" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#18384a"/>
+      <stop offset="1" stop-color="#0b1720"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="18" y1="20" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#234c63"/>
+      <stop offset="1" stop-color="#122733"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="28" y1="18" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffae57"/>
+      <stop offset="1" stop-color="#f26a2e"/>
+    </linearGradient>
+    <linearGradient id="tray" x1="20" y1="38" x2="44" y2="42" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7ce6ff"/>
+      <stop offset="1" stop-color="#41b8d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <path d="M16 49.5h32" fill="none" stroke="#6fdfff" stroke-linecap="round" stroke-width="2.5"/>
+  <circle cx="23" cy="50" r="2" fill="#ff8f45"/>
+  <circle cx="32" cy="50" r="2" fill="#ff8f45"/>
+  <circle cx="41" cy="50" r="2" fill="#ff8f45"/>
+  <path d="M18 18h28a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6V24a6 6 0 0 1 6-6Z" fill="#0d1c27" stroke="#79e8ff" stroke-opacity=".18" stroke-width="1.5"/>
+  <rect x="18" y="22" width="28" height="20" rx="4" fill="url(#panel)"/>
+  <path d="M18 26h28" fill="none" stroke="#7ce6ff" stroke-linecap="round" stroke-opacity=".35" stroke-width="2"/>
+  <path d="M26 18h12" fill="none" stroke="#d7f7ff" stroke-linecap="round" stroke-width="3"/>
+  <rect x="28" y="18" width="8" height="6" rx="2" fill="url(#accent)"/>
+  <path d="M32 24v8" fill="none" stroke="#ff9d4c" stroke-linecap="round" stroke-width="3"/>
+  <path d="M28.5 32h7l-2.4 6h-2.2Z" fill="#ffc46b"/>
+  <rect x="21" y="37" width="22" height="4" rx="2" fill="url(#tray)"/>
+  <rect x="15" y="24" width="2.75" height="14" rx="1.375" fill="#ff8f45"/>
+  <circle cx="16.4" cy="22" r="1.7" fill="#ffe08a"/>
+  <circle cx="16.4" cy="28" r="1.25" fill="#7ce6ff"/>
+  <circle cx="16.4" cy="33" r="1.25" fill="#7ce6ff" fill-opacity=".7"/>
+</svg>
