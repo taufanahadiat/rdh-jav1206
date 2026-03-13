@@ -1,0 +1,52 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+logs/
+log/
+
+# Cache
+cache/
+tmp/
+temp/
+
+# Node
+node_modules/
+
+# Composer
+vendor/
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Linux service
+*.pid
+*.sock
+
+# Upload files
+uploads/
+dist/img/uploads/
+
+# Database dump
+*.sql
+*.dump
+
+# Backup
+*.bak
+*.old
+
+# Git
+.gitignore.lock
