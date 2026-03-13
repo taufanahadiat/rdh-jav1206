@@ -95,21 +95,31 @@
     $('#outputWinder').text(outputWinder.toFixed(0));
   }
 
-  function showError(msg) {
+  function showBackendError(msg) {
     const message = msg || 'An error occurred while reading live data.';
     if (message === lastErrorMessage) {
       return;
     }
 
     lastErrorMessage = message;
-    if (window.AppToast) {
-      window.AppToast.error(message, {
+    if (window.AppNotify && window.AppNotify.backend) {
+      window.AppNotify.backend.error(message, {
         key: 'dashboard-live-error',
         cooldown: 5000,
-        toastrOptions: {
-          timeOut: 5000,
-          extendedTimeOut: 1500
+        options: {
+          toast: true,
+          position: 'top-end'
         }
+      });
+    }
+  }
+
+  function showFrontendError(msg) {
+    const message = msg || 'A frontend error occurred.';
+    if (window.AppNotify && window.AppNotify.frontend) {
+      window.AppNotify.frontend.error(message, {
+        key: 'dashboard-frontend-error',
+        cooldown: 5000
       });
     }
   }
@@ -126,7 +136,7 @@
 
   function fetchInbox() {
     if (!tags.length) {
-      showError('No `.live-data` elements with a `data-db` attribute were found.');
+      showFrontendError('No `.live-data` elements with a `data-db` attribute were found.');
       return;
     }
 
@@ -154,7 +164,7 @@
 
     currentRequest.done(function (res) {
       if (!res || !res.ok) {
-        showError(res && res.message ? res.message : 'The server response is invalid.');
+        showBackendError(res && res.message ? res.message : 'The server response is invalid.');
         return;
       }
 
@@ -174,7 +184,7 @@
       const msg = xhr && xhr.responseJSON && xhr.responseJSON.message
         ? xhr.responseJSON.message
         : 'Failed to connect to the live inbox endpoint.';
-      showError(msg);
+      showBackendError(msg);
     });
 
     currentRequest.always(function () {

@@ -94,11 +94,25 @@ $ajaxEndpoint = '../include/admin/db_act.php';
       var pendingAlertType = 'success';
 
       function notify(message, type, options) {
-        if (!message || !window.AppToast || typeof window.AppToast.show !== 'function') {
+        if (!message || !window.AppNotify || !window.AppNotify.backend) {
           return;
         }
 
-        window.AppToast.show(message, type || 'info', options || {});
+        return window.AppNotify.backend.show(type || 'info', message, assignOptionDefaults(options || {}));
+      }
+
+      function assignOptionDefaults(options) {
+        var config = $.extend(true, {}, options || {});
+        if (!config.options) {
+          config.options = {};
+        }
+        if (typeof config.options.toast !== 'boolean') {
+          config.options.toast = true;
+        }
+        if (!config.options.position) {
+          config.options.position = 'top-end';
+        }
+        return config;
       }
 
       function syncImportButton(isLoading, selectedTable) {
@@ -463,9 +477,28 @@ $ajaxEndpoint = '../include/admin/db_act.php';
 
             setLoadingState(false);
             notify(response.message || 'Changes were detected before import.', 'warning');
-            if (window.confirm(renderPreviewText(response.preview))) {
-              runImport();
+            if (!window.AppNotify || !window.AppNotify.backend) {
+              if (window.confirm(renderPreviewText(response.preview))) {
+                runImport();
+              }
+              return;
             }
+
+            window.AppNotify.backend.question(renderPreviewText(response.preview), {
+              title: 'Changes detected',
+              autohide: false,
+              options: {
+                toast: false,
+                width: 760,
+                showCancelButton: true,
+                confirmButtonText: 'Continue re-import',
+                cancelButtonText: 'Cancel'
+              }
+            }).then(function (result) {
+              if (result && result.isConfirmed) {
+                runImport();
+              }
+            });
           })
           .fail(function (xhr) {
             var message = 'Failed to preview the dblist import.';

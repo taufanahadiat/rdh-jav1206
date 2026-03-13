@@ -131,6 +131,8 @@ if ($loggedIn) {
   <link rel="stylesheet" href="plugins/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
   <!-- AdminLTE 3 (local) -->
   <link rel="stylesheet" href="plugins/AdminLTE-3.2.0/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="plugins/AdminLTE-3.2.0/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <link rel="stylesheet" href="plugins/AdminLTE-3.2.0/plugins/sweetalert2/sweetalert2.min.css">
   <link rel="stylesheet" href="plugins/AdminLTE-3.2.0/plugins/toastr/toastr.min.css">
 </head>
 <body class="hold-transition login-page">
@@ -174,6 +176,7 @@ if ($loggedIn) {
 <script src="plugins/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 (local) -->
 <script src="plugins/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/AdminLTE-3.2.0/plugins/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="plugins/AdminLTE-3.2.0/plugins/toastr/toastr.min.js"></script>
 <!-- AdminLTE 3 (local) -->
 <script src="plugins/AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
@@ -184,8 +187,8 @@ if ($loggedIn) {
     if (!$form.length) return;
 
     <?php if ($error): ?>
-    if (window.AppToast) {
-      window.AppToast.error(<?php echo json_encode($error); ?>);
+    if (window.AppNotify) {
+      window.AppNotify.backend.error(<?php echo json_encode($error); ?>);
     }
     <?php endif; ?>
 
@@ -212,8 +215,8 @@ if ($loggedIn) {
           if (data.debug) {
             console.error(data.debug);
           }
-          if (window.AppToast) {
-            window.AppToast.error(data.message || 'Login failed.');
+          if (window.AppNotify) {
+            window.AppNotify.backend.error(data.message || 'Login failed.');
           }
         })
         .fail(function (xhr, status, err) {
@@ -226,8 +229,8 @@ if ($loggedIn) {
             console.error(message);
           }
 
-          if (window.AppToast) {
-            window.AppToast.error(message);
+          if (window.AppNotify) {
+            window.AppNotify.backend.error(message);
           }
         });
     });

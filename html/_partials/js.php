@@ -4,6 +4,7 @@ $assetBase = $assetBase ?? '';
 <script src="<?php echo htmlspecialchars($assetBase); ?>plugins/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
 <script src="<?php echo htmlspecialchars($assetBase); ?>plugins/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo htmlspecialchars($assetBase); ?>plugins/AdminLTE-3.2.0/plugins/select2/js/select2.full.min.js"></script>
+<script src="<?php echo htmlspecialchars($assetBase); ?>plugins/AdminLTE-3.2.0/plugins/sweetalert2/sweetalert2.all.min.js"></script>
 <script src="<?php echo htmlspecialchars($assetBase); ?>plugins/AdminLTE-3.2.0/plugins/toastr/toastr.min.js"></script>
 <?php if (!empty($includeDataTables)): ?>
 <script src="<?php echo htmlspecialchars($assetBase); ?>plugins/AdminLTE-3.2.0/plugins/datatables/jquery.dataTables.min.js"></script>
