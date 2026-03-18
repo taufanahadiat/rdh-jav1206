@@ -8,12 +8,15 @@
 </section>
 <?php
 $assetBase = $assetBase ?? '';
-$inboxEndpoint = $inboxEndpoint ?? ($assetBase . 'include/dashboard/dash_act.php');
+$dashboardSnapshotEndpoint = $dashboardSnapshotEndpoint ?? '/plc/dashboard-snapshot/';
+$dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
 ?>
 <script>
-  window.DASHBOARD_INBOX_ENDPOINT = <?php echo json_encode($inboxEndpoint); ?>;
+  window.DASHBOARD_SNAPSHOT_ENDPOINT = <?php echo json_encode($dashboardSnapshotEndpoint); ?>;
 </script>
-<script src="<?php echo htmlspecialchars($assetBase); ?>include/dashboard/dashboard.js" defer></script>
+<script src="<?php echo htmlspecialchars(
+  $assetBase,
+); ?>include/dashboard/dashboard.js?v=<?php echo urlencode((string) $dashboardJsVersion); ?>" defer></script>
 
 <section class="content">
   <div class="container-fluid">
@@ -21,7 +24,7 @@ $inboxEndpoint = $inboxEndpoint ?? ($assetBase . 'include/dashboard/dash_act.php
       <div class="col-lg-3 col-6">
         <div class="small-box bg-industrial">
           <div class="inner">
-            <h3 id="productName" class="live-data" data-db="DB2.DBS0.50" data-format="string">PCL-25</h3>
+            <h3 id="productName" class="live-data" data-db="DB2.DBB0[50]" data-format="string">PCL-25</h3>
             <p>Product</p>
           </div>
           <div class="icon"><i class="far fa-life-ring fa-spin"></i></div>
@@ -64,7 +67,7 @@ $inboxEndpoint = $inboxEndpoint ?? ($assetBase . 'include/dashboard/dash_act.php
         <div class="card card-light card-outline product-detail-card">
           <div class="card-header text-uppercase">Product</div>
           <div class="card-body">
-            <div class="product-code"><i class="fas fa-tag mr-2"></i><span id="productCode" class="live-data" data-db="DB2.DBS0.50" data-format="string">PCL-25</span></div>
+            <div class="product-code"><i class="fas fa-tag mr-2"></i><span id="productCode" class="live-data" data-db="DB2.DBB0[50]" data-format="string">PCL-25</span></div>
             <p class="detail-label mb-3">Product</p>
             <div class="row">
               <div class="col-sm-6">
@@ -87,11 +90,11 @@ $inboxEndpoint = $inboxEndpoint ?? ($assetBase . 'include/dashboard/dash_act.php
                   <p class="detail-label">Density</p>
                 </div>
                 <div class="detail-item">
-                  <div class="detail-value-sm"><i class="far fa-file-alt mr-1"></i><span id="recipeValue" class="live-data" data-db="DB2.DBS52.50" data-format="string">PCL-25-25-50 TEST</span></div>
+                  <div class="detail-value-sm"><i class="far fa-file-alt mr-1"></i><span id="recipeValue" class="live-data" data-db="DB2.DBB52[50]" data-format="string">PCL-25-25-50 TEST</span></div>
                   <p class="detail-label">Recipe</p>
                 </div>
                 <div class="detail-item mb-0">
-                  <div class="detail-value-sm"><i class="fas fa-flag mr-1 text-success"></i><span id="campaignValue" class="live-data" data-db="DB2.DBS104.50" data-format="string">PCL25_7107_10620900</span></div>
+                  <div class="detail-value-sm"><i class="fas fa-flag mr-1 text-success"></i><span id="campaignValue" class="live-data" data-db="DB2.DBB104[50]" data-format="string">PCL25_7107_10620900</span></div>
                   <p class="detail-label">Campaign</p>
                 </div>
               </div>

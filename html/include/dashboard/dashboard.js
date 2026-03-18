@@ -4,7 +4,7 @@
   const nodesByTag = {};
   const tags = [];
   const tagValues = {};
-  const inboxEndpoint = window.DASHBOARD_INBOX_ENDPOINT || '../include/dashboard/dash_act.php';
+  const snapshotEndpoint = window.DASHBOARD_SNAPSHOT_ENDPOINT || '/plc/dashboard-snapshot/';
 
   let isFetching = false;
   let pollTimer = null;
@@ -13,7 +13,9 @@
   let lastErrorMessage = '';
 
   function normalizeTag(tag) {
-    return String(tag || '').replace(/\s+/g, '').toUpperCase();
+    return String(tag || '')
+      .replace(/\s+/g, '')
+      .toUpperCase();
   }
 
   function toNum(v) {
@@ -82,9 +84,10 @@
     const meterCounter = toNum(values['DB330.DBD3010']);
 
     const meterRemaining = Math.max(0, meterSet - meterCounter);
-    const progressPct = meterSet > 0 ? Math.min(100, Math.max(0, (meterCounter / meterSet) * 100)) : 0;
+    const progressPct =
+      meterSet > 0 ? Math.min(100, Math.max(0, (meterCounter / meterSet) * 100)) : 0;
     const densityKgM3 = DENSITY_G_CM3 * 1000;
-    const massKg = (thicknessUm * 1e-6) * (webWidthMm * 1e-3) * meterCounter * densityKgM3;
+    const massKg = thicknessUm * 1e-6 * (webWidthMm * 1e-3) * meterCounter * densityKgM3;
     const lineSpeedMh = lineSpeed * 60;
     const estimatedHours = lineSpeedMh > 0 && meterCounter > 0 ? meterCounter / lineSpeedMh : 0;
     const outputWinder = estimatedHours > 0 ? massKg / estimatedHours : 0;
@@ -108,8 +111,8 @@
         cooldown: 5000,
         options: {
           toast: true,
-          position: 'top-end'
-        }
+          position: 'top-end',
+        },
       });
     }
   }
@@ -119,7 +122,7 @@
     if (window.AppNotify && window.AppNotify.frontend) {
       window.AppNotify.frontend.error(message, {
         key: 'dashboard-frontend-error',
-        cooldown: 5000
+        cooldown: 5000,
       });
     }
   }
@@ -152,14 +155,18 @@
 
     isFetching = true;
 
+    const requestUrl = new URL(snapshotEndpoint, window.location.href);
+    tags.forEach(function (tag) {
+      requestUrl.searchParams.append('tag', tag);
+    });
+    requestUrl.searchParams.set('direct_read_missing', '1');
+
     currentRequest = $.ajax({
-      url: inboxEndpoint,
-      method: 'POST',
+      url: requestUrl.toString(),
+      method: 'GET',
       dataType: 'json',
       timeout: 6000,
       cache: false,
-      contentType: 'application/json; charset=UTF-8',
-      data: JSON.stringify({ tags: tags })
     });
 
     currentRequest.done(function (res) {
@@ -168,7 +175,12 @@
         return;
       }
 
-      const values = res && res.tag_values && typeof res.tag_values === 'object' ? res.tag_values : {};
+      const values =
+        res && res.tag_values && typeof res.tag_values === 'object' ? res.tag_values : {};
+      if (Object.keys(values).length === 0) {
+        showBackendError('Tidak ada data yang diterima. Periksa koneksi PLC dan konfigurasi tag.');
+      }
+
       Object.keys(values).forEach(function (tag) {
         tagValues[normalizeTag(tag)] = values[tag];
       });
@@ -181,9 +193,10 @@
     currentRequest.fail(function (xhr, status) {
       if (status === 'abort') return;
 
-      const msg = xhr && xhr.responseJSON && xhr.responseJSON.message
-        ? xhr.responseJSON.message
-        : 'Failed to connect to the live inbox endpoint.';
+      const msg =
+        xhr && xhr.responseJSON && (xhr.responseJSON.message || xhr.responseJSON.detail)
+          ? xhr.responseJSON.message || xhr.responseJSON.detail
+          : 'Failed to connect to the live inbox endpoint.';
       showBackendError(msg);
     });
 

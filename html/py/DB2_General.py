@@ -42,7 +42,10 @@ def build_payload(plc: snap7.client.Client) -> dict:
     }
 
 
-TAG_PATTERN = re.compile(r"^DB(?P<db>\d+)\.DBS(?P<byte>\d+)(?:\.(?P<len>\d+))?$", re.IGNORECASE)
+TAG_PATTERN = re.compile(
+    r"^DB(?P<db>\d+)\.(?:DBB(?P<byte_new>\d+)\[(?P<len_new>\d+)\]|DBS(?P<byte_old>\d+)(?:\.(?P<len_old>\d+))?)$",
+    re.IGNORECASE,
+)
 
 
 def normalize_tag(raw_tag: str) -> tuple[str, int, int]:
@@ -55,12 +58,14 @@ def normalize_tag(raw_tag: str) -> tuple[str, int, int]:
     if db_num != DB_NUM:
         raise ValueError(f"Tag {raw_tag} does not belong to DB{DB_NUM}")
 
-    byte_offset = int(m.group("byte"))
-    max_len = int(m.group("len")) if m.group("len") is not None else STRING_LEN
+    byte_raw = m.group("byte_new") or m.group("byte_old")
+    len_raw = m.group("len_new") or m.group("len_old")
+    byte_offset = int(byte_raw)
+    max_len = int(len_raw) if len_raw is not None else STRING_LEN
     if max_len < 1 or max_len > 254:
         raise ValueError(f"Invalid STRING length in tag: {raw_tag}")
 
-    return f"DB{DB_NUM}.DBS{byte_offset}.{max_len}", byte_offset, max_len
+    return f"DB{DB_NUM}.DBB{byte_offset}[{max_len}]", byte_offset, max_len
 
 
 def read_tags(plc: snap7.client.Client, tags: list[str]) -> dict:
@@ -88,7 +93,7 @@ def main() -> int:
         "--tag",
         action="append",
         default=[],
-        help="Ambil tag STRING tertentu. Bisa diulang. Contoh: DB2.DBS0.50",
+        help="Ambil tag STRING tertentu. Bisa diulang. Contoh: DB2.DBB0[50]",
     )
     args = parser.parse_args()
 

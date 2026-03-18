@@ -32,6 +32,12 @@ const DB_DEFAULT_LIMITED_TABLES = [
   'public.rtagroll',
 ];
 const DB_ALLOWED_LIMITS = [500, 1000, 5000, 10000];
+const DB_RELATED_DISPLAY_PREFERENCES = [
+  'public.dbmaster' => ['dbsym', 'dbname'],
+  'public.dblist' => ['address', 'name'],
+  'public.role' => ['rolename'],
+  'public.rolldata' => ['rollname'],
+];
 
 function db_act_respond(array $payload, int $statusCode = 200): void
 {
@@ -156,45 +162,6 @@ function db_act_normalize_value($value)
   return $encoded === false ? (string) $value : $encoded;
 }
 
-function db_act_table_rows(
-  PDO $pdo,
-  string $schemaName,
-  string $tableName,
-  array $columns,
-  ?int $limit = null,
-  ?string $orderBy = null,
-  string $orderDir = 'asc'
-): array {
-  if (empty($columns)) {
-    return [];
-  }
-
-  $safeSchema = db_act_quote_identifier($schemaName);
-  $safeTable = db_act_quote_identifier($tableName);
-  $orderSql = '';
-  if ($orderBy !== null && in_array($orderBy, $columns, true)) {
-    $safeOrderColumn = db_act_quote_identifier($orderBy);
-    $safeOrderDir = strtolower($orderDir) === 'desc' ? 'DESC' : 'ASC';
-    $orderSql = " ORDER BY {$safeOrderColumn} {$safeOrderDir}";
-  } elseif (in_array('id', $columns, true)) {
-    $orderSql = ' ORDER BY "id"';
-  }
-
-  $limitSql = $limit !== null ? ' LIMIT ' . (int) $limit : '';
-  $stmt = $pdo->query("SELECT * FROM {$safeSchema}.{$safeTable}{$orderSql}{$limitSql}");
-
-  $rows = [];
-  foreach ($stmt->fetchAll() as $row) {
-    $item = [];
-    foreach ($columns as $column) {
-      $item[$column] = db_act_normalize_value($row[$column] ?? null);
-    }
-    $rows[] = $item;
-  }
-
-  return $rows;
-}
-
 function db_act_table_total_rows(PDO $pdo, string $schemaName, string $tableName): int
 {
   $safeSchema = db_act_quote_identifier($schemaName);
@@ -241,6 +208,338 @@ function db_act_order_column(array $columns, string $requestedColumn): ?string
 function db_act_order_direction(string $requestedDirection): string
 {
   return strtolower($requestedDirection) === 'desc' ? 'desc' : 'asc';
+}
+
+function db_act_foreign_keys(PDO $pdo): array
+{
+  static $cache = null;
+  if ($cache !== null) {
+    return $cache;
+  }
+
+  $stmt = $pdo->query(
+    "SELECT tc.table_schema, tc.table_name, kcu.column_name, ccu.table_schema AS foreign_table_schema,
+            ccu.table_name AS foreign_table_name, ccu.column_name AS foreign_column_name
+     FROM information_schema.table_constraints tc
+     JOIN information_schema.key_column_usage kcu
+       ON tc.constraint_name = kcu.constraint_name
+      AND tc.table_schema = kcu.table_schema
+     JOIN information_schema.constraint_column_usage ccu
+       ON ccu.constraint_name = tc.constraint_name
+      AND ccu.table_schema = tc.table_schema
+     WHERE tc.constraint_type = 'FOREIGN KEY'
+       AND tc.table_schema NOT IN ('pg_catalog', 'information_schema')
+     ORDER BY tc.table_schema, tc.table_name, kcu.ordinal_position",
+  );
+
+  $cache = [];
+  foreach ($stmt->fetchAll() as $row) {
+    $tableValue = (string) $row['table_schema'] . '.' . (string) $row['table_name'];
+    $cache[$tableValue][] = [
+      'local_column' => (string) $row['column_name'],
+      'foreign_schema' => (string) $row['foreign_table_schema'],
+      'foreign_table' => (string) $row['foreign_table_name'],
+      'foreign_column' => (string) $row['foreign_column_name'],
+    ];
+  }
+
+  return $cache;
+}
+
+function db_act_table_catalog(PDO $pdo): array
+{
+  static $cache = null;
+  if ($cache !== null) {
+    return $cache;
+  }
+
+  $stmt = $pdo->query(
+    "SELECT table_schema, table_name, column_name
+     FROM information_schema.columns
+     WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+     ORDER BY table_schema, table_name, ordinal_position",
+  );
+
+  $cache = [];
+  foreach ($stmt->fetchAll() as $row) {
+    $tableValue = (string) $row['table_schema'] . '.' . (string) $row['table_name'];
+    if (!isset($cache[$tableValue])) {
+      $cache[$tableValue] = [
+        'schema' => (string) $row['table_schema'],
+        'table' => (string) $row['table_name'],
+        'columns' => [],
+      ];
+    }
+    $cache[$tableValue]['columns'][] = (string) $row['column_name'];
+  }
+
+  return $cache;
+}
+
+function db_act_related_display_columns(PDO $pdo, string $foreignSchema, string $foreignTable): array
+{
+  static $cache = [];
+
+  $tableValue = $foreignSchema . '.' . $foreignTable;
+  if (isset($cache[$tableValue])) {
+    return $cache[$tableValue];
+  }
+
+  $columns = db_act_table_columns($pdo, $foreignSchema, $foreignTable);
+  $preferred = DB_RELATED_DISPLAY_PREFERENCES[$tableValue] ?? [];
+  $matchedPreferred = array_values(array_filter($preferred, static function ($column) use ($columns) {
+    return in_array($column, $columns, true);
+  }));
+  if (!empty($matchedPreferred)) {
+    $cache[$tableValue] = $matchedPreferred;
+    return $cache[$tableValue];
+  }
+
+  $excludedColumns = ['id', 'pass', 'password', 'created_at', 'updated_at'];
+  $namedCandidates = [];
+  foreach ($columns as $column) {
+    if (in_array($column, $excludedColumns, true)) {
+      continue;
+    }
+
+    if (preg_match('/(^name$|name$|label$|title$|code$|username$)/i', $column) === 1) {
+      $namedCandidates[] = $column;
+    }
+  }
+
+  if (!empty($namedCandidates)) {
+    $cache[$tableValue] = array_slice($namedCandidates, 0, 2);
+    return $cache[$tableValue];
+  }
+
+  $fallback = [];
+  foreach ($columns as $column) {
+    if (in_array($column, $excludedColumns, true)) {
+      continue;
+    }
+    $fallback[] = $column;
+  }
+
+  $cache[$tableValue] = array_slice($fallback, 0, 2);
+  return $cache[$tableValue];
+}
+
+function db_act_heuristic_foreign_keys(PDO $pdo, string $tableValue, array $baseColumns): array
+{
+  $tableCatalog = db_act_table_catalog($pdo);
+  if (!isset($tableCatalog[$tableValue])) {
+    return [];
+  }
+
+  $schemaName = $tableCatalog[$tableValue]['schema'];
+  $heuristics = [];
+  foreach ($baseColumns as $column) {
+    if (preg_match('/^(.+?)id$/i', $column, $matches) !== 1) {
+      continue;
+    }
+
+    $candidateTable = strtolower(rtrim($matches[1], '_'));
+    if ($candidateTable === '') {
+      continue;
+    }
+
+    $candidateTableValue = $schemaName . '.' . $candidateTable;
+    if (!isset($tableCatalog[$candidateTableValue])) {
+      continue;
+    }
+
+    if (!in_array('id', $tableCatalog[$candidateTableValue]['columns'], true)) {
+      continue;
+    }
+
+    $heuristics[] = [
+      'local_column' => $column,
+      'foreign_schema' => $schemaName,
+      'foreign_table' => $candidateTable,
+      'foreign_column' => 'id',
+    ];
+  }
+
+  return $heuristics;
+}
+
+function db_act_alias_from_local_column(string $localColumn): string
+{
+  $alias = preg_replace('/id$/i', '', $localColumn);
+  $alias = $alias === null ? $localColumn : $alias;
+  $alias = rtrim($alias, '_');
+  return $alias !== '' ? $alias : $localColumn;
+}
+
+function db_act_resolve_related_alias(string $preferredAlias, string $localColumn, array $baseColumns, array $usedAliases): string
+{
+  if (!in_array($preferredAlias, $baseColumns, true) && !in_array($preferredAlias, $usedAliases, true)) {
+    return $preferredAlias;
+  }
+
+  $prefix = db_act_alias_from_local_column($localColumn);
+  $candidate = $prefix . '_' . $preferredAlias;
+  if (!in_array($candidate, $baseColumns, true) && !in_array($candidate, $usedAliases, true)) {
+    return $candidate;
+  }
+
+  $suffix = 2;
+  while (true) {
+    $numberedCandidate = $candidate . '_' . $suffix;
+    if (!in_array($numberedCandidate, $baseColumns, true) && !in_array($numberedCandidate, $usedAliases, true)) {
+      return $numberedCandidate;
+    }
+    $suffix++;
+  }
+}
+
+function db_act_related_bindings(PDO $pdo, string $tableValue, array $baseColumns): array
+{
+  static $cache = [];
+  $cacheKey = $tableValue . '|' . implode(',', $baseColumns);
+  if (isset($cache[$cacheKey])) {
+    return $cache[$cacheKey];
+  }
+
+  $foreignKeys = db_act_foreign_keys($pdo);
+  $tableForeignKeys = $foreignKeys[$tableValue] ?? [];
+  $heuristicForeignKeys = db_act_heuristic_foreign_keys($pdo, $tableValue, $baseColumns);
+  $foreignKeysByLocalColumn = [];
+  foreach (array_merge($tableForeignKeys, $heuristicForeignKeys) as $foreignKey) {
+    $localColumn = (string) $foreignKey['local_column'];
+    if (!isset($foreignKeysByLocalColumn[$localColumn])) {
+      $foreignKeysByLocalColumn[$localColumn] = $foreignKey;
+    }
+  }
+  $bindings = [];
+  $usedAliases = [];
+  $bindingIndex = 0;
+
+  foreach (array_values($foreignKeysByLocalColumn) as $foreignKey) {
+    $localColumn = $foreignKey['local_column'];
+    if (!in_array($localColumn, $baseColumns, true)) {
+      continue;
+    }
+
+    $displayColumns = db_act_related_display_columns(
+      $pdo,
+      $foreignKey['foreign_schema'],
+      $foreignKey['foreign_table']
+    );
+    if (empty($displayColumns)) {
+      continue;
+    }
+
+    $replacements = [];
+    foreach ($displayColumns as $displayColumn) {
+      $alias = db_act_resolve_related_alias($displayColumn, $localColumn, $baseColumns, $usedAliases);
+      $usedAliases[] = $alias;
+      $replacements[] = [
+        'alias' => $alias,
+        'column' => $displayColumn,
+      ];
+    }
+
+    $bindings[] = [
+      'join_type' => 'LEFT',
+      'join_schema' => $foreignKey['foreign_schema'],
+      'join_table' => $foreignKey['foreign_table'],
+      'join_alias' => 'bind_' . db_act_alias_from_local_column($localColumn) . '_' . $bindingIndex,
+      'local_column' => $localColumn,
+      'foreign_column' => $foreignKey['foreign_column'],
+      'replacements' => $replacements,
+    ];
+    $bindingIndex++;
+  }
+
+  $cache[$cacheKey] = $bindings;
+  return $cache[$cacheKey];
+}
+
+function db_act_bind_related_available(PDO $pdo, string $tableValue, array $baseColumns): bool
+{
+  return !empty(db_act_related_bindings($pdo, $tableValue, $baseColumns));
+}
+
+function db_act_bind_related_requested(string $requestedValue): bool
+{
+  $normalized = strtolower(trim($requestedValue));
+  return in_array($normalized, ['1', 'true', 'yes', 'on', 'related'], true);
+}
+
+function db_act_bind_related_enabled(PDO $pdo, string $tableValue, array $baseColumns, string $requestedValue): bool
+{
+  return db_act_bind_related_available($pdo, $tableValue, $baseColumns) && db_act_bind_related_requested($requestedValue);
+}
+
+function db_act_table_query_plan(PDO $pdo, string $schemaName, string $tableName, array $baseColumns, bool $bindRelated): array
+{
+  $tableValue = $schemaName . '.' . $tableName;
+  $tableAlias = 'base_row';
+  $quotedTableAlias = db_act_quote_identifier($tableAlias);
+  $bindingConfig = $bindRelated
+    ? db_act_related_bindings($pdo, $tableValue, $baseColumns)
+    : [];
+
+  $bindingsByLocalColumn = [];
+  foreach ($bindingConfig as $binding) {
+    $bindingsByLocalColumn[$binding['local_column']] = $binding;
+  }
+
+  $selectExpressions = [];
+  $displayColumns = [];
+  $sortMap = [];
+
+  foreach ($baseColumns as $column) {
+    if (isset($bindingsByLocalColumn[$column])) {
+      $binding = $bindingsByLocalColumn[$column];
+      $quotedJoinAlias = db_act_quote_identifier((string) $binding['join_alias']);
+      foreach ($binding['replacements'] as $replacement) {
+        $alias = (string) $replacement['alias'];
+        if (in_array($alias, $displayColumns, true)) {
+          throw new RuntimeException('Invalid related binding alias: ' . $alias);
+        }
+
+        $quotedRelatedColumn = db_act_quote_identifier((string) $replacement['column']);
+        $quotedAlias = db_act_quote_identifier($alias);
+
+        $displayColumns[] = $alias;
+        $selectExpressions[] = "{$quotedJoinAlias}.{$quotedRelatedColumn} AS {$quotedAlias}";
+        $sortMap[$alias] = "{$quotedJoinAlias}.{$quotedRelatedColumn}";
+      }
+      continue;
+    }
+
+    $quotedColumn = db_act_quote_identifier($column);
+    $displayColumns[] = $column;
+    $selectExpressions[] = "{$quotedTableAlias}.{$quotedColumn} AS {$quotedColumn}";
+    $sortMap[$column] = "{$quotedTableAlias}.{$quotedColumn}";
+  }
+
+  $joinExpressions = [];
+  foreach ($bindingConfig as $binding) {
+    $joinType = strtoupper(trim((string) ($binding['join_type'] ?? 'LEFT')));
+    if ($joinType !== 'LEFT' && $joinType !== 'INNER') {
+      $joinType = 'LEFT';
+    }
+
+    $quotedJoinSchema = db_act_quote_identifier((string) $binding['join_schema']);
+    $quotedJoinTable = db_act_quote_identifier((string) $binding['join_table']);
+    $quotedJoinAlias = db_act_quote_identifier((string) $binding['join_alias']);
+    $quotedLocalColumn = db_act_quote_identifier((string) $binding['local_column']);
+    $quotedForeignColumn = db_act_quote_identifier((string) $binding['foreign_column']);
+
+    $joinExpressions[] =
+      " {$joinType} JOIN {$quotedJoinSchema}.{$quotedJoinTable} {$quotedJoinAlias}" .
+      " ON {$quotedJoinAlias}.{$quotedForeignColumn} = {$quotedTableAlias}.{$quotedLocalColumn}";
+  }
+
+  return [
+    'columns' => $displayColumns,
+    'select_sql' => implode(', ', $selectExpressions),
+    'join_sql' => implode('', $joinExpressions),
+    'sort_map' => $sortMap,
+  ];
 }
 
 function db_act_import_dblist(PDO $pdo): array
@@ -426,6 +725,54 @@ function db_act_preview_reimport_dblist(PDO $pdo): array
   ];
 }
 
+function db_act_table_rows(
+  PDO $pdo,
+  string $schemaName,
+  string $tableName,
+  array $baseColumns,
+  ?int $limit = null,
+  ?string $orderBy = null,
+  string $orderDir = 'asc',
+  bool $bindRelated = false
+): array {
+  if (empty($baseColumns)) {
+    return [];
+  }
+
+  $queryPlan = db_act_table_query_plan($pdo, $schemaName, $tableName, $baseColumns, $bindRelated);
+  $safeSchema = db_act_quote_identifier($schemaName);
+  $safeTable = db_act_quote_identifier($tableName);
+  $sortMap = $queryPlan['sort_map'];
+
+  $orderSql = '';
+  if ($orderBy !== null && isset($sortMap[$orderBy])) {
+    $safeOrderDir = strtolower($orderDir) === 'desc' ? 'DESC' : 'ASC';
+    $orderSql = ' ORDER BY ' . $sortMap[$orderBy] . ' ' . $safeOrderDir;
+  } elseif (isset($sortMap['id'])) {
+    $orderSql = ' ORDER BY ' . $sortMap['id'];
+  }
+
+  $limitSql = $limit !== null ? ' LIMIT ' . (int) $limit : '';
+  $sql =
+    'SELECT ' . $queryPlan['select_sql'] .
+    " FROM {$safeSchema}.{$safeTable} " . db_act_quote_identifier('base_row') .
+    $queryPlan['join_sql'] .
+    $orderSql .
+    $limitSql;
+
+  $stmt = $pdo->query($sql);
+  $rows = [];
+  foreach ($stmt->fetchAll() as $row) {
+    $item = [];
+    foreach ($queryPlan['columns'] as $column) {
+      $item[$column] = db_act_normalize_value($row[$column] ?? null);
+    }
+    $rows[] = $item;
+  }
+
+  return $rows;
+}
+
 try {
   $pdo = db_connect();
   $dbConfig = db_config();
@@ -479,6 +826,8 @@ try {
       'row_limit_value' => 'all',
       'order_by' => null,
       'order_dir' => 'asc',
+      'bind_available' => false,
+      'bind_enabled' => false,
       'message' => 'No tables are available.',
     ]);
   }
@@ -499,12 +848,17 @@ try {
 
   $schemaName = $selectedTable['schema'];
   $tableName = $selectedTable['table'];
+  $tableValue = $selectedTable['value'];
   $requestedLimit = trim((string) ($_GET['limit'] ?? ''));
-  $columns = db_act_table_columns($pdo, $schemaName, $tableName);
+  $baseColumns = db_act_table_columns($pdo, $schemaName, $tableName);
+  $bindAvailable = db_act_bind_related_available($pdo, $tableValue, $baseColumns);
+  $bindEnabled = db_act_bind_related_enabled($pdo, $tableValue, $baseColumns, trim((string) ($_GET['bind'] ?? '')));
+  $queryPlan = db_act_table_query_plan($pdo, $schemaName, $tableName, $baseColumns, $bindEnabled);
+  $columns = $queryPlan['columns'];
   $orderBy = db_act_order_column($columns, trim((string) ($_GET['order_by'] ?? '')));
   $orderDir = db_act_order_direction(trim((string) ($_GET['order_dir'] ?? 'asc')));
   $rowLimit = db_act_effective_row_limit($schemaName, $tableName, $requestedLimit);
-  $rows = db_act_table_rows($pdo, $schemaName, $tableName, $columns, $rowLimit, $orderBy, $orderDir);
+  $rows = db_act_table_rows($pdo, $schemaName, $tableName, $baseColumns, $rowLimit, $orderBy, $orderDir, $bindEnabled);
   $totalRows = db_act_table_total_rows($pdo, $schemaName, $tableName);
 
   db_act_respond([
@@ -520,6 +874,8 @@ try {
     'row_limit_value' => db_act_limit_value($rowLimit),
     'order_by' => $orderBy,
     'order_dir' => $orderDir,
+    'bind_available' => $bindAvailable,
+    'bind_enabled' => $bindEnabled,
     'message' => '',
   ]);
 } catch (Throwable $e) {

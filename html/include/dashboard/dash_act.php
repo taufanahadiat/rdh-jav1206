@@ -10,8 +10,44 @@ if (!isset($_SESSION['username'])) {
 
 header('Content-Type: application/json');
 
+$collectRepeatedQueryValues = function ($key) {
+  $result = [];
+  $queryString = (string) ($_SERVER['QUERY_STRING'] ?? '');
+  if ($queryString === '') {
+    return $result;
+  }
+
+  foreach (explode('&', $queryString) as $pair) {
+    if ($pair === '') {
+      continue;
+    }
+
+    $parts = explode('=', $pair, 2);
+    $rawKey = urldecode($parts[0]);
+    if ($rawKey !== $key) {
+      continue;
+    }
+
+    $result[] = isset($parts[1]) ? urldecode($parts[1]) : '';
+  }
+
+  return $result;
+};
+
 $normalizeTag = function ($rawTag) {
   $rawTag = strtoupper(preg_replace('/\s+/', '', (string) $rawTag));
+  if (preg_match('/^DB(\d+)\.DBB(\d+)\[(\d+)\]$/', $rawTag, $m)) {
+    $dbNum = (int) $m[1];
+    $byte = (int) $m[2];
+    $len = (int) $m[3];
+
+    if ($len < 1 || $len > 254) {
+      return null;
+    }
+
+    return [sprintf('DB%d.DBB%d[%d]', $dbNum, $byte, $len), $dbNum];
+  }
+
   if (!preg_match('/^DB(\d+)\.(DBX|DBB|DBW|DBD|DBS)(\d+)(?:\.(\d+))?$/', $rawTag, $m)) {
     return null;
   }
@@ -33,7 +69,7 @@ $normalizeTag = function ($rawTag) {
     if ($len < 1 || $len > 254) {
       return null;
     }
-    return [sprintf('DB%d.DBS%d.%d', $dbNum, $byte, $len), $dbNum];
+    return [sprintf('DB%d.DBB%d[%d]', $dbNum, $byte, $len), $dbNum];
   }
 
   if ($bit !== null) {
@@ -76,12 +112,20 @@ if (empty($rawTags) && isset($_GET['tag'])) {
   }
 }
 
+if (empty($rawTags)) {
+  $rawTags = $collectRepeatedQueryValues('tag');
+}
+
 if (empty($rawTags) && isset($_GET['db'])) {
   if (is_array($_GET['db'])) {
     $rawTags = $_GET['db'];
   } else {
     $rawTags = [$_GET['db']];
   }
+}
+
+if (empty($rawTags)) {
+  $rawTags = $collectRepeatedQueryValues('db');
 }
 
 $rawTags = array_values(
@@ -120,8 +164,54 @@ if (empty($tagsByDb)) {
 }
 
 $tagValues = [];
+$tagsByDbToLoad = $tagsByDb;
+$apiBaseUrl = rtrim((string) (getenv('PLC_API_URL') ?: 'http://127.0.0.1:8000'), '/');
+$apiQueryParts = [];
+foreach (array_keys($normalizedTags) as $tag) {
+  $apiQueryParts[] = 'tag=' . rawurlencode($tag);
+}
+$apiQueryParts[] = 'direct_read_missing=1';
+$apiUrl = $apiBaseUrl . '/plc/tags?' . implode('&', $apiQueryParts);
+$apiContext = stream_context_create([
+  'http' => [
+    'method' => 'GET',
+    'timeout' => 3,
+    'ignore_errors' => true,
+  ],
+]);
+$apiResponse = @file_get_contents($apiUrl, false, $apiContext);
+if (is_string($apiResponse) && trim($apiResponse) !== '') {
+  $apiData = json_decode(trim($apiResponse), true);
+  if (is_array($apiData) && !empty($apiData['ok']) && isset($apiData['tag_values']) && is_array($apiData['tag_values'])) {
+    foreach ($apiData['tag_values'] as $tag => $value) {
+      $tagValues[strtoupper((string) $tag)] = $value;
+    }
+
+    $missingTags = [];
+    foreach ($normalizedTags as $tag => $_) {
+      if (!array_key_exists($tag, $tagValues)) {
+        $missingTags[] = $tag;
+      }
+    }
+
+    $tagsByDbToLoad = [];
+    foreach ($missingTags as $missingTag) {
+      $parsed = $normalizeTag($missingTag);
+      if ($parsed === null) {
+        continue;
+      }
+
+      [$tag, $dbNum] = $parsed;
+      if (!isset($tagsByDbToLoad[$dbNum])) {
+        $tagsByDbToLoad[$dbNum] = [];
+      }
+      $tagsByDbToLoad[$dbNum][] = $tag;
+    }
+  }
+}
+
 $projectRoot = dirname(__DIR__, 2);
-foreach ($tagsByDb as $dbNum => $tags) {
+foreach ($tagsByDbToLoad as $dbNum => $tags) {
   $scripts = glob($projectRoot . '/py/DB' . (int) $dbNum . '_*.py');
   if (!$scripts) {
     echo json_encode([

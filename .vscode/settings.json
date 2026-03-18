@@ -1,6 +1,7 @@
 {
   "chatgpt.openOnStartup": false,
   "editor.formatOnSave": true,
+  "python.defaultInterpreterPath": "/var/www/.venv/bin/python",
   "prettier.requireConfig": true,
   "prettier.prettierPath": "/var/www/html/node_modules/prettier/index.cjs",
   "prettier.configPath": "/var/www/html/.prettierrc.json",

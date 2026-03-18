@@ -12,6 +12,18 @@ header('Content-Type: application/json');
 
 $normalizeTag = function ($rawTag) {
   $rawTag = strtoupper(preg_replace('/\s+/', '', (string) $rawTag));
+  if (preg_match('/^DB(\d+)\.DBB(\d+)\[(\d+)\]$/', $rawTag, $m)) {
+    $dbNum = (int) $m[1];
+    $byte = (int) $m[2];
+    $len = (int) $m[3];
+
+    if ($len < 1 || $len > 254) {
+      return null;
+    }
+
+    return [sprintf('DB%d.DBB%d[%d]', $dbNum, $byte, $len), $dbNum];
+  }
+
   if (!preg_match('/^DB(\d+)\.(DBX|DBB|DBW|DBD|DBS)(\d+)(?:\.(\d+))?$/', $rawTag, $m)) {
     return null;
   }
@@ -33,7 +45,7 @@ $normalizeTag = function ($rawTag) {
     if ($len < 1 || $len > 254) {
       return null;
     }
-    return [sprintf('DB%d.DBS%d.%d', $dbNum, $byte, $len), $dbNum];
+    return [sprintf('DB%d.DBB%d[%d]', $dbNum, $byte, $len), $dbNum];
   }
 
   if ($bit !== null) {
