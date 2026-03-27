@@ -5,6 +5,7 @@ import re
 import sys
 
 import snap7
+from snap7.util import get_int
 
 
 PLC_IP = "169.254.254.45"
@@ -13,6 +14,8 @@ SLOT = 1
 DB_NUM = 2
 STRING_LEN = 50
 FIELD_SIZE = STRING_LEN + 2  # Siemens STRING header (max_len + cur_len)
+STAT_OFFSET = FIELD_SIZE * 3
+PAYLOAD_SIZE = STAT_OFFSET + 2
 
 
 def read_s7_string(buf: bytes, offset: int, max_len: int) -> str:
@@ -31,14 +34,14 @@ def read_s7_string(buf: bytes, offset: int, max_len: int) -> str:
 
 
 def build_payload(plc: snap7.client.Client) -> dict:
-    total_size = FIELD_SIZE * 3
-    data = bytes(plc.db_read(DB_NUM, 0, total_size))
+    data = bytearray(plc.db_read(DB_NUM, 0, PAYLOAD_SIZE))
 
     return {
         "db": DB_NUM,
         "product": read_s7_string(data, 0, STRING_LEN),
         "recipe": read_s7_string(data, FIELD_SIZE, STRING_LEN),
         "campaign": read_s7_string(data, FIELD_SIZE * 2, STRING_LEN),
+        "status": int(get_int(data, STAT_OFFSET)),
     }
 
 

@@ -8,7 +8,7 @@ import re
 import signal
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Optional
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -40,6 +40,7 @@ PLC_API_TIMEOUT_SECONDS = max(float(os.getenv("PLC_API_TIMEOUT_SECONDS", "5")), 
 
 DEFAULT_INTERVAL_MS = 50
 DEFAULT_EVENT_HOLDOFF_MS = 100
+DOWNTIME_ROLLNAME = "Server Shutdown"
 
 FUNCTION_BODY_RE = r'(FUNCTION(?:_BLOCK)?\s+"{name}".*?BEGIN)(?P<body>.*?)(END_FUNCTION(?:_BLOCK)?)'
 MASTER_NAME = "FC_Fluct_Master"
@@ -104,6 +105,7 @@ def read_product_state(plc: snap7.client.Client) -> dict[str, Any]:
         "product": normalize_text(payload.get("product")),
         "recipe": normalize_text(payload.get("recipe")),
         "campaign": normalize_text(payload.get("campaign")),
+        "status": int(payload.get("status") or 0),
     }
 
 
@@ -124,8 +126,8 @@ def write_helper_row(conn, state: dict[str, Any], started_at: datetime) -> None:
         cur.execute("DELETE FROM public.helper")
         cur.execute(
             """
-            INSERT INTO public.helper (rollname, product, recipe, campaign, starttime)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO public.helper (rollname, product, recipe, campaign, starttime, status)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
                 build_rollname(started_at),
@@ -133,6 +135,7 @@ def write_helper_row(conn, state: dict[str, Any], started_at: datetime) -> None:
                 state["recipe"],
                 state["campaign"],
                 started_at.strftime("%Y-%m-%d %H:%M:%S"),
+                state["status"],
             ),
         )
 
@@ -150,7 +153,8 @@ def update_helper_fields(conn, state: dict[str, Any]) -> int:
             UPDATE public.helper AS helper
             SET product = %s,
                 recipe = %s,
-                campaign = %s
+                campaign = %s,
+                status = %s
             FROM latest_helper
             WHERE helper.ctid = latest_helper.ctid
             """,
@@ -158,6 +162,7 @@ def update_helper_fields(conn, state: dict[str, Any]) -> int:
                 state["product"],
                 state["recipe"],
                 state["campaign"],
+                state["status"],
             ),
         )
         return cur.rowcount
@@ -167,7 +172,7 @@ def fetch_helper_row(conn) -> Optional[dict[str, Any]]:
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT rollname, product, recipe, campaign, starttime
+            SELECT rollname, product, recipe, campaign, starttime, status
             FROM public.helper
             ORDER BY starttime DESC NULLS LAST, ctid DESC
             LIMIT 1
@@ -184,15 +189,140 @@ def fetch_helper_row(conn) -> Optional[dict[str, Any]]:
         "recipe": normalize_text(row[2]),
         "campaign": normalize_text(row[3]),
         "starttime": row[4],
+        "status": int(row[5]) if row[5] is not None else None,
     }
 
 
-def insert_rolldata_row(conn, helper_row: dict[str, Any], ended_at: datetime) -> int:
+def get_system_boot_time() -> Optional[datetime]:
+    try:
+        uptime_text = Path("/proc/uptime").read_text(encoding="utf-8").split()[0]
+        uptime_seconds = max(float(uptime_text), 0.0)
+    except (OSError, ValueError, IndexError):
+        return None
+
+    return datetime.now() - timedelta(seconds=uptime_seconds)
+
+
+def fetch_latest_rolldata_row(conn) -> Optional[dict[str, Any]]:
     with conn.cursor() as cur:
         cur.execute(
             """
-            INSERT INTO public.rolldata (rollname, product, recipe, campaign, starttime, endtime)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            SELECT id, rollname, product, recipe, campaign, starttime, endtime, status
+            FROM public.rolldata
+            ORDER BY endtime DESC NULLS LAST, id DESC
+            LIMIT 1
+            """
+        )
+        row = cur.fetchone()
+
+    if row is None:
+        return None
+
+    return {
+        "id": int(row[0]),
+        "rollname": normalize_text(row[1]),
+        "product": normalize_text(row[2]),
+        "recipe": normalize_text(row[3]),
+        "campaign": normalize_text(row[4]),
+        "starttime": row[5],
+        "endtime": row[6],
+        "status": int(row[7]) if row[7] is not None else None,
+    }
+
+
+def build_startup_gap_row(
+    helper_row: Optional[dict[str, Any]],
+    latest_roll_row: dict[str, Any],
+    started_at: datetime,
+) -> dict[str, Any]:
+    metadata_source = helper_row or latest_roll_row
+    return {
+        "rollname": DOWNTIME_ROLLNAME,
+        "product": normalize_text(metadata_source.get("product")),
+        "recipe": normalize_text(metadata_source.get("recipe")),
+        "campaign": normalize_text(metadata_source.get("campaign")),
+        "starttime": started_at,
+    }
+
+
+def recover_startup_gap(conn, dry_run: bool) -> None:
+    latest_roll_row = fetch_latest_rolldata_row(conn)
+    if latest_roll_row is None:
+        log_event("startup_gap_recovery_skipped", reason="rolldata_empty")
+        return
+
+    last_endtime = latest_roll_row["endtime"]
+    if last_endtime is None:
+        log_event(
+            "startup_gap_recovery_skipped",
+            reason="last_endtime_missing",
+            rollid=latest_roll_row["id"],
+        )
+        return
+
+    boot_time = get_system_boot_time()
+    if boot_time is None:
+        log_event("startup_gap_recovery_skipped", reason="boot_time_unavailable")
+        return
+
+    if last_endtime >= boot_time:
+        log_event(
+            "startup_gap_recovery_skipped",
+            reason="server_not_restarted_since_last_roll",
+            last_endtime=last_endtime.strftime("%Y-%m-%d %H:%M:%S"),
+            boot_time=boot_time.strftime("%Y-%m-%d %H:%M:%S"),
+        )
+        return
+
+    recovered_until = datetime.now()
+    if recovered_until <= last_endtime:
+        log_event(
+            "startup_gap_recovery_skipped",
+            reason="invalid_recovery_window",
+            last_endtime=last_endtime.strftime("%Y-%m-%d %H:%M:%S"),
+            recovered_until=recovered_until.strftime("%Y-%m-%d %H:%M:%S"),
+        )
+        return
+
+    helper_row = fetch_helper_row(conn)
+    recovery_row = build_startup_gap_row(helper_row, latest_roll_row, last_endtime)
+
+    if dry_run:
+        log_event(
+            "startup_gap_recovery_dry_run",
+            rollname=recovery_row["rollname"],
+            product=recovery_row["product"],
+            recipe=recovery_row["recipe"],
+            campaign=recovery_row["campaign"],
+            starttime=last_endtime.strftime("%Y-%m-%d %H:%M:%S"),
+            endtime=recovered_until.strftime("%Y-%m-%d %H:%M:%S"),
+            status=0,
+            boot_time=boot_time.strftime("%Y-%m-%d %H:%M:%S"),
+        )
+        return
+
+    rollid = insert_rolldata_row(conn, recovery_row, recovered_until, status=0)
+    conn.commit()
+    log_event(
+        "startup_gap_recovered",
+        rollid=rollid,
+        rollname=recovery_row["rollname"],
+        product=recovery_row["product"],
+        recipe=recovery_row["recipe"],
+        campaign=recovery_row["campaign"],
+        starttime=last_endtime.strftime("%Y-%m-%d %H:%M:%S"),
+        endtime=recovered_until.strftime("%Y-%m-%d %H:%M:%S"),
+        status=0,
+        boot_time=boot_time.strftime("%Y-%m-%d %H:%M:%S"),
+    )
+
+
+def insert_rolldata_row(conn, helper_row: dict[str, Any], ended_at: datetime, status: int = 1) -> int:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO public.rolldata (rollname, product, recipe, campaign, starttime, endtime, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
             (
@@ -202,6 +332,7 @@ def insert_rolldata_row(conn, helper_row: dict[str, Any], ended_at: datetime) ->
                 helper_row["campaign"],
                 helper_row["starttime"],
                 ended_at.strftime("%Y-%m-%d %H:%M:%S"),
+                status,
             ),
         )
         row = cur.fetchone()
@@ -450,12 +581,13 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
     last_start_bit = False
     last_aux_bit: Optional[bool] = None
     last_first_cycle_bit: Optional[bool] = None
-    last_product_state: Optional[tuple[str, str, str]] = None
+    last_product_state: Optional[tuple[str, str, str, int]] = None
     last_helper_event_monotonic = 0.0
     last_rolldata_event_monotonic = 0.0
     pending_rolldata_event_time: Optional[datetime] = None
     pending_rolldata_helper_row: Optional[dict[str, Any]] = None
     pending_rolldata_event_monotonic = 0.0
+    startup_gap_checked = False
     holdoff_seconds = max(event_holdoff_ms, 0) / 1000
 
     while not _should_stop:
@@ -477,6 +609,9 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                 conn = connect_db()
                 log_event("db_connected", database=db_config()["dbname"], user=db_config()["user"])
                 rtagroll_catalog = None
+                if not startup_gap_checked:
+                    recover_startup_gap(conn, dry_run=dry_run)
+                    startup_gap_checked = True
 
             if rtagroll_catalog is None:
                 rtagroll_catalog = load_rtagroll_catalog(conn)
@@ -502,6 +637,7 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                 product_state["product"],
                 product_state["recipe"],
                 product_state["campaign"],
+                product_state["status"],
             )
 
             start_rising = state["start_bit"] and not last_start_bit
@@ -526,6 +662,7 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                         product=product_state["product"],
                         recipe=product_state["recipe"],
                         campaign=product_state["campaign"],
+                        status=product_state["status"],
                     )
                 else:
                     updated_rows = update_helper_fields(conn, product_state)
@@ -536,6 +673,7 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                             product=product_state["product"],
                             recipe=product_state["recipe"],
                             campaign=product_state["campaign"],
+                            status=product_state["status"],
                         )
                     elif verbose:
                         log_event(
@@ -543,6 +681,7 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                             product=product_state["product"],
                             recipe=product_state["recipe"],
                             campaign=product_state["campaign"],
+                            status=product_state["status"],
                         )
 
             if aux_rising:
@@ -592,6 +731,7 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                             product=product_state["product"],
                             recipe=product_state["recipe"],
                             campaign=product_state["campaign"],
+                            status=product_state["status"],
                             starttime=started_at.strftime("%Y-%m-%d %H:%M:%S"),
                         )
                     else:
@@ -601,6 +741,7 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                             product_state["product"],
                             product_state["recipe"],
                             product_state["campaign"],
+                            product_state["status"],
                         )
                         log_event(
                             "helper_saved",
@@ -609,6 +750,7 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                             product=product_state["product"],
                             recipe=product_state["recipe"],
                             campaign=product_state["campaign"],
+                            status=product_state["status"],
                             starttime=started_at.strftime("%Y-%m-%d %H:%M:%S"),
                         )
                     last_helper_event_monotonic = current_monotonic

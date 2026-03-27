@@ -9,20 +9,27 @@
 <?php
 $assetBase = $assetBase ?? '';
 $dashboardSnapshotEndpoint = $dashboardSnapshotEndpoint ?? '/plc/dashboard-snapshot/';
+$dashboardRollHistoryEndpoint =
+  $dashboardRollHistoryEndpoint ?? $assetBase . 'include/dashboard/roll_history_act.php';
 $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
 ?>
 <script>
   window.DASHBOARD_SNAPSHOT_ENDPOINT = <?php echo json_encode($dashboardSnapshotEndpoint); ?>;
+  window.DASHBOARD_ROLL_HISTORY_ENDPOINT = <?php echo json_encode(
+    $dashboardRollHistoryEndpoint,
+  ); ?>;
 </script>
 <script src="<?php echo htmlspecialchars(
   $assetBase,
-); ?>include/dashboard/dashboard.js?v=<?php echo urlencode((string) $dashboardJsVersion); ?>" defer></script>
+); ?>include/dashboard/dashboard.js?v=<?php echo urlencode(
+  (string) $dashboardJsVersion,
+); ?>" defer></script>
 
 <section class="content">
   <div class="container-fluid">
     <div class="row">
       <div class="col-lg-3 col-6">
-        <div class="small-box bg-industrial">
+        <div class="small-box bg-industrial box-tone-1">
           <div class="inner">
             <h3 id="productName" class="live-data" data-db="DB2.DBB0[50]" data-format="string">PCL-25</h3>
             <p>Product</p>
@@ -32,7 +39,7 @@ $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
       </div>
 
       <div class="col-lg-3 col-6">
-        <div class="small-box bg-industrial">
+        <div class="small-box bg-industrial box-tone-2">
           <div class="inner">
             <h3 class="live-data" data-db="DB325.DBD1498" data-format="float" data-decimal="0">00</h3>
             <p>Line Speed (m/min)</p>
@@ -42,7 +49,7 @@ $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
       </div>
 
       <div class="col-lg-3 col-6">
-        <div class="small-box bg-industrial">
+        <div class="small-box bg-industrial box-tone-3">
           <div class="inner">
             <h3 id="outputWinder">0</h3>
             <p>Output On Winder (kg/h)</p>
@@ -52,12 +59,38 @@ $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
       </div>
 
       <div class="col-lg-3 col-6">
-        <div class="small-box bg-industrial">
+        <div class="small-box bg-industrial box-tone-4">
           <div class="inner">
             <h3 class="live-data" data-db="DB330.DBD3010" data-format="float" data-decimal="0">00</h3>
             <p>Meter Counter (m)</p>
           </div>
           <div class="icon"><i class="fab fa-monero"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-light card-outline roll-history-card">
+          <div class="card-header">Roll History</div>
+          <div class="card-body">
+            <div id="rollHistoryEmpty" class="roll-history-empty d-none">Belum ada data roll history.</div>
+            <div id="rollHistoryTimelineWrap" class="roll-history-timeline-wrap d-none">
+              <div id="rollHistoryTimeline" class="roll-history-timeline" aria-label="Roll history timeline"></div>
+              <div id="rollHistoryTimeAxis" class="roll-history-axis roll-history-axis-bottom"></div>
+            </div>
+            <div id="rollHistoryRangeControls" class="roll-history-range-controls d-none">
+              <label class="roll-history-range-field">
+                <span class="roll-history-range-icon"><i class="far fa-calendar-alt"></i></span>
+                <input id="rollHistoryRangeStart" class="roll-history-range-input" type="datetime-local" step="300" aria-label="Roll history start date">
+              </label>
+              <label class="roll-history-range-field">
+                <span class="roll-history-range-icon"><i class="far fa-calendar-alt"></i></span>
+                <input id="rollHistoryRangeEnd" class="roll-history-range-input" type="datetime-local" step="300" aria-label="Roll history end date">
+              </label>
+            </div>
+            <div id="rollHistoryLoading" class="roll-history-loading">Memuat roll history...</div>
+          </div>
         </div>
       </div>
     </div>
@@ -128,6 +161,37 @@ $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
             </div>
             <div class="output-progress-text">
               <span class="live-data" data-db="DB330.DBD3010" data-format="int">0</span> / <span class="live-data" data-db="DB330.DBD3006" data-format="int">0</span> m
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-light card-outline roll-detail-card">
+          <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+            <span>Roll Detail</span>
+            <span id="rollDetailMeta" class="roll-detail-meta">Pilih roll pada timeline.</span>
+          </div>
+          <div class="card-body">
+            <div id="rollDetailSummary" class="roll-detail-summary d-none"></div>
+            <div id="rollDetailLoading" class="roll-detail-loading d-none">Memuat detail roll...</div>
+            <div id="rollDetailEmpty" class="roll-detail-empty">Klik salah satu roll untuk melihat data `rtagroll`.</div>
+            <div id="rollDetailTableWrap" class="table-responsive d-none">
+              <table class="table table-bordered table-striped table-sm roll-detail-table mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>DB ID</th>
+                    <th>Address</th>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="rollDetailTableBody"></tbody>
+              </table>
             </div>
           </div>
         </div>
