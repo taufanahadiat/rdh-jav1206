@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once dirname(__DIR__) . '/config/config.php';
+require_once dirname(__DIR__, 3) . '/config/config.php';
 
 if (!isset($_SESSION['username'])) {
   http_response_code(401);

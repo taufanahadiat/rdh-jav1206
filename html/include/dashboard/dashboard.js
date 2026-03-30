@@ -8,7 +8,7 @@
   const snapshotEndpoint =
     window.DASHBOARD_SNAPSHOT_ENDPOINT ||
     webConfig.dashboard_snapshot_endpoint ||
-    '/plc/dashboard-snapshot/';
+    '/include/dashboard/plc/dashboard-snapshot/';
   const REQUEST_TIMEOUT_MS = Number(webConfig.dashboard_request_timeout_ms) || 6000;
   const POLL_INTERVAL_MS = Number(webConfig.dashboard_poll_interval_ms) || 1000;
   const HIDDEN_POLL_INTERVAL_MS = Number(webConfig.dashboard_hidden_poll_interval_ms) || 3000;

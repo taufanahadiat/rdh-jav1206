@@ -123,6 +123,7 @@ def create_app() -> FastAPI:
         }
 
     @app.get("/plc/dashboard-snapshot")
+    @app.get("/include/dashboard/plc/dashboard-snapshot")
     def get_dashboard_snapshot(
         tag: Optional[List[str]] = Query(default=None),
         direct_read_missing: bool = Query(default=True),
@@ -136,6 +137,7 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     @app.post("/plc/dashboard-snapshot")
+    @app.post("/include/dashboard/plc/dashboard-snapshot")
     def post_dashboard_snapshot(payload: Optional[dict] = Body(default=None)) -> dict:
         payload = payload or {}
         tag_list = parse_dashboard_tag_list(payload.get("tags"))

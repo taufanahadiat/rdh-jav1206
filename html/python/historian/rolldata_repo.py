@@ -197,7 +197,6 @@ def insert_rtagroll_rows(
             skipped_values.append(
                 {
                     "address": address,
-                    "name": entry["name"],
                     "value": tag_values[address],
                 }
             )

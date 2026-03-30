@@ -155,7 +155,7 @@ if (!function_exists('plc_api_timeout_seconds')) {
 if (!function_exists('plc_api_snapshot_path')) {
   function plc_api_snapshot_path(): string
   {
-    return '/' . ltrim((string) config_env(['API_SNAPSHOT_PATH'], '/plc/dashboard-snapshot'), '/');
+    return '/' . ltrim((string) config_env(['API_SNAPSHOT_PATH'], '/include/dashboard/plc/dashboard-snapshot'), '/');
   }
 }
 
@@ -169,7 +169,7 @@ if (!function_exists('plc_api_snapshot_url')) {
 if (!function_exists('web_dashboard_snapshot_endpoint')) {
   function web_dashboard_snapshot_endpoint(): string
   {
-    return (string) config_env(['WEB_DASHBOARD_SNAPSHOT_ENDPOINT', 'DASHBOARD_SNAPSHOT_ENDPOINT'], '/plc/dashboard-snapshot/');
+    return (string) config_env(['WEB_DASHBOARD_SNAPSHOT_ENDPOINT', 'DASHBOARD_SNAPSHOT_ENDPOINT'], '/include/dashboard/plc/dashboard-snapshot/');
   }
 }
 

@@ -15,12 +15,12 @@ from historian.config import (
     HISTORIAN_INTERVAL_MS,
     PLC_IP,
     RACK,
-    SCL_SOURCE_PATH,
+    RTAGROLL_CATALOG_PATH,
     SLOT,
     build_rollname,
     db_config,
 )
-from historian.fluctuation_catalog import load_rtagroll_catalog
+from historian.read_db import load_rtagroll_catalog
 from historian.helper_repo import fetch_helper_row, update_helper_fields, write_helper_row
 from historian.plc_client import connect_plc, fetch_plc_tag_values, read_product_state, read_status_bits
 from historian.rolldata_repo import insert_rolldata_row, insert_rtagroll_rows, recover_startup_gap
@@ -96,22 +96,12 @@ def run_listener(interval_ms: int, event_holdoff_ms: int, once: bool, dry_run: b
                     startup_gap_checked = True
 
             if rtagroll_catalog is None:
-                rtagroll_catalog = load_rtagroll_catalog(conn)
+                rtagroll_catalog = load_rtagroll_catalog(RTAGROLL_CATALOG_PATH, conn)
                 log_event(
                     "rtagroll_catalog_loaded",
-                    scl_source=str(SCL_SOURCE_PATH),
-                    function_count=len(rtagroll_catalog["function_names"]),
-                    function_names=rtagroll_catalog["function_names"],
-                    db_numbers=rtagroll_catalog["db_numbers"],
+                    catalog_source=str(RTAGROLL_CATALOG_PATH),
                     mapped_tags=len(rtagroll_catalog["entries"]),
-                    missing_tags=len(rtagroll_catalog["missing_names"]),
                 )
-                if rtagroll_catalog["missing_names"]:
-                    log_event(
-                        "rtagroll_catalog_missing_tags",
-                        count=len(rtagroll_catalog["missing_names"]),
-                        names=rtagroll_catalog["missing_names"][:20],
-                    )
 
             product_state = read_product_state(plc)
             state = read_status_bits(plc)

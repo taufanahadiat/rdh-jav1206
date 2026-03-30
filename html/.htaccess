@@ -2,5 +2,4 @@ SetEnv APP_DEBUG 1
 
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule ^plc/dashboard-snapshot$ /plc/dashboard-snapshot.php [L,QSA]
 </IfModule>
