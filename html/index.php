@@ -22,6 +22,8 @@ session_start();
 require_once __DIR__ . '/config/config.php';
 
 $dbConfig = db_config();
+$appConfig = app_config();
+$webConfig = web_config();
 
 $error = '';
 $debugMsg = '';
@@ -107,7 +109,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $error = 'Database connection failed. Please check the configuration.';
       if ($isAjax) {
         header('Content-Type: application/json');
-        echo json_encode(['ok' => false, 'message' => $error, 'debug' => $debugMsg]);
+        $payload = ['ok' => false, 'message' => $error];
+        if (app_debug()) {
+          $payload['debug'] = $debugMsg;
+        }
+        echo json_encode($payload);
         exit();
       }
     }
@@ -125,7 +131,7 @@ if ($loggedIn) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login | LINE-5</title>
+  <title><?php echo htmlspecialchars(web_page_title('Login')); ?></title>
 
   <!-- Font Awesome (local) -->
   <link rel="stylesheet" href="plugins/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
@@ -140,10 +146,10 @@ if ($loggedIn) {
   <div class="login-box">
     <div class="card card-outline card-primary">
       <div class="card-header text-center">
-        <span class="h1"><b>Roll Data</b> History</span>
+        <span class="h1"><?php echo htmlspecialchars($webConfig['login_heading']); ?></span>
       </div>
       <div class="card-body">
-        <p class="login-box-msg">LINE-5 [JAV1206]</p>
+        <p class="login-box-msg"><?php echo htmlspecialchars($webConfig['login_subtitle']); ?></p>
 
         <form id="login-form" action="index.php" method="post" autocomplete="off">
           <div class="input-group mb-3">

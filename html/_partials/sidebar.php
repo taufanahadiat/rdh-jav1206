@@ -1,13 +1,15 @@
 <?php
+require_once __DIR__ . '/../config/config.php';
 $activeMenu = $activeMenu ?? 'dashboard';
 $routeBase = $routeBase ?? 'index.php';
 $userRole = strtolower(trim((string) ($userRole ?? '')));
 $isAdmin = $userRole === 'admin';
 $isAdminMenuOpen = $activeMenu === 'database';
+$sidebarTitle = web_sidebar_title();
 ?>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <a href="<?php echo htmlspecialchars($routeBase); ?>?id=dashboard" class="brand-link">
-    <span class="brand-text font-weight-light">Roll Data History Line 5</span>
+    <span class="brand-text font-weight-light"><?php echo htmlspecialchars($sidebarTitle); ?></span>
   </a>
   <div class="sidebar">
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">

@@ -14,4 +14,3 @@ $assetBase = $assetBase ?? '';
 <?php endif; ?>
 <script src="<?php echo htmlspecialchars($assetBase); ?>plugins/AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
 <script src="<?php echo htmlspecialchars($assetBase); ?>app-notify.js"></script>
-<script src="<?php echo htmlspecialchars($assetBase); ?>theme.js"></script>

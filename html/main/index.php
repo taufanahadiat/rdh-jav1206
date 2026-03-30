@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../config/config.php';
 
 if (!isset($_SESSION['username'])) {
   header('Location: ../index.php');
@@ -18,15 +19,18 @@ if ($id === '' || $id === 'dashbboard') {
 }
 
 $activeMenu = $id;
-$pageTitle = 'Dashboard Inbox | LINE-5';
+$pageTitle = web_page_title(web_app_title());
 $assetBase = '../';
 $routeBase = 'index.php';
 $logoutUrl = '../index.php?logout=1';
 $inboxEndpoint = '../include/dashboard/dash_act.php';
 $includeDataTables = $id === 'database' && $userRole === 'admin';
+$sidebarStorageKey = 'dashboardSidebarState:' . (string) ($_SESSION['username'] ?? 'guest');
+$layoutJsVersion = @filemtime(__DIR__ . '/../assets/js/layout.js') ?: time();
 ?>
 <?php include('../_partials/head.php'); ?>
-<body class="hold-transition sidebar-mini layout-fixed theme-dark">
+<body class="hold-transition sidebar-collapse layout-fixed theme-dark" data-sidebar-storage-key="<?php echo htmlspecialchars($sidebarStorageKey); ?>">
+<script src="<?php echo htmlspecialchars($assetBase); ?>assets/js/layout.js?v=<?php echo urlencode((string) $layoutJsVersion); ?>"></script>
 <div class="wrapper">
   <?php include('../_partials/navbar.php'); ?>
   <?php include('../_partials/sidebar.php'); ?>

@@ -20,7 +20,7 @@ if ($userRole !== 'admin') {
 
 require_once dirname(__DIR__, 2) . '/config/config.php';
 
-const DB_AWL_IMPORT_SCRIPT = '/var/www/html/py/import_awl_to_dblist.py';
+const DB_AWL_IMPORT_SCRIPT = '/var/www/html/python/admin/import_awl_to_dblist.py';
 const DB_DBLIST_TABLE = 'public.dblist';
 const DB_PREVIEW_SAMPLE_LIMIT = 8;
 const DB_TABLE_ALIASES = [

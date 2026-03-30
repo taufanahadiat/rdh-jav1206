@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once dirname(__DIR__) . '/config/config.php';
 
 if (!isset($_SESSION['username'])) {
   http_response_code(401);
@@ -8,8 +9,7 @@ if (!isset($_SESSION['username'])) {
   exit();
 }
 
-$upstreamBaseUrl = rtrim((string) (getenv('PLC_API_URL') ?: 'http://127.0.0.1:8000'), '/');
-$upstreamUrl = $upstreamBaseUrl . '/plc/dashboard-snapshot';
+$upstreamUrl = plc_api_snapshot_url();
 $queryString = (string) ($_SERVER['QUERY_STRING'] ?? '');
 if ($queryString !== '') {
   $upstreamUrl .= '?' . $queryString;
@@ -29,7 +29,7 @@ if ($contentType !== '') {
 $context = stream_context_create([
   'http' => [
     'method' => $method,
-    'timeout' => 10,
+    'timeout' => plc_api_timeout_seconds(),
     'ignore_errors' => true,
     'header' => implode("\r\n", $headers),
     'content' => in_array($method, ['POST', 'PUT', 'PATCH'], true) ? $rawBody : '',

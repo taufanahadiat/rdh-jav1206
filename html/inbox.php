@@ -133,7 +133,7 @@ if (empty($tagsByDb)) {
 
 $tagValues = [];
 foreach ($tagsByDb as $dbNum => $tags) {
-  $scripts = glob(__DIR__ . '/py/DB' . (int) $dbNum . '_*.py');
+  $scripts = glob(__DIR__ . '/python/DB' . (int) $dbNum . '_*.py');
   if (!$scripts) {
     echo json_encode([
       'ok' => false,

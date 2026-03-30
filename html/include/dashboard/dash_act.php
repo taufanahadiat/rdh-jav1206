@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once dirname(__DIR__, 2) . '/config/config.php';
 
 if (!isset($_SESSION['username'])) {
   http_response_code(401);
@@ -165,7 +166,7 @@ if (empty($tagsByDb)) {
 
 $tagValues = [];
 $tagsByDbToLoad = $tagsByDb;
-$apiBaseUrl = rtrim((string) (getenv('PLC_API_URL') ?: 'http://127.0.0.1:8000'), '/');
+$apiBaseUrl = plc_api_base_url();
 $apiQueryParts = [];
 foreach (array_keys($normalizedTags) as $tag) {
   $apiQueryParts[] = 'tag=' . rawurlencode($tag);
@@ -175,7 +176,7 @@ $apiUrl = $apiBaseUrl . '/plc/tags?' . implode('&', $apiQueryParts);
 $apiContext = stream_context_create([
   'http' => [
     'method' => 'GET',
-    'timeout' => 3,
+    'timeout' => plc_api_timeout_seconds(),
     'ignore_errors' => true,
   ],
 ]);
@@ -212,7 +213,7 @@ if (is_string($apiResponse) && trim($apiResponse) !== '') {
 
 $projectRoot = dirname(__DIR__, 2);
 foreach ($tagsByDbToLoad as $dbNum => $tags) {
-  $scripts = glob($projectRoot . '/py/DB' . (int) $dbNum . '_*.py');
+  $scripts = glob($projectRoot . '/python/DB' . (int) $dbNum . '_*.py');
   if (!$scripts) {
     echo json_encode([
       'ok' => false,

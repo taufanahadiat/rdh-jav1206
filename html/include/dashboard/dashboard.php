@@ -7,17 +7,19 @@
   </div>
 </section>
 <?php
+require_once dirname(__DIR__, 2) . '/config/config.php';
 $assetBase = $assetBase ?? '';
-$dashboardSnapshotEndpoint = $dashboardSnapshotEndpoint ?? '/plc/dashboard-snapshot/';
-$dashboardRollHistoryEndpoint =
-  $dashboardRollHistoryEndpoint ?? $assetBase . 'include/dashboard/roll_history_act.php';
+$dashboardSnapshotEndpoint = $dashboardSnapshotEndpoint ?? web_dashboard_snapshot_endpoint();
+$webConfig = web_config();
+$appEnv = app_env();
+$appDebug = app_debug();
 $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
 ?>
 <script>
+  window.WEB_CONFIG = <?php echo json_encode($webConfig); ?>;
+  window.APP_ENV = <?php echo json_encode($appEnv); ?>;
+  window.APP_DEBUG = <?php echo json_encode($appDebug); ?>;
   window.DASHBOARD_SNAPSHOT_ENDPOINT = <?php echo json_encode($dashboardSnapshotEndpoint); ?>;
-  window.DASHBOARD_ROLL_HISTORY_ENDPOINT = <?php echo json_encode(
-    $dashboardRollHistoryEndpoint,
-  ); ?>;
 </script>
 <script src="<?php echo htmlspecialchars(
   $assetBase,
@@ -69,35 +71,14 @@ $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12">
-        <div class="card card-light card-outline roll-history-card">
-          <div class="card-header">Roll History</div>
-          <div class="card-body">
-            <div id="rollHistoryEmpty" class="roll-history-empty d-none">Belum ada data roll history.</div>
-            <div id="rollHistoryTimelineWrap" class="roll-history-timeline-wrap d-none">
-              <div id="rollHistoryTimeline" class="roll-history-timeline" aria-label="Roll history timeline"></div>
-              <div id="rollHistoryTimeAxis" class="roll-history-axis roll-history-axis-bottom"></div>
-            </div>
-            <div id="rollHistoryRangeControls" class="roll-history-range-controls d-none">
-              <label class="roll-history-range-field">
-                <span class="roll-history-range-icon"><i class="far fa-calendar-alt"></i></span>
-                <input id="rollHistoryRangeStart" class="roll-history-range-input" type="datetime-local" step="300" aria-label="Roll history start date">
-              </label>
-              <label class="roll-history-range-field">
-                <span class="roll-history-range-icon"><i class="far fa-calendar-alt"></i></span>
-                <input id="rollHistoryRangeEnd" class="roll-history-range-input" type="datetime-local" step="300" aria-label="Roll history end date">
-              </label>
-            </div>
-            <div id="rollHistoryLoading" class="roll-history-loading">Memuat roll history...</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <?php
+    $prodHisSection = 'history';
+    include __DIR__ . '/../history/prod_his.php';
+    ?>
 
-    <div class="row">
-      <div class="col-lg-6">
-        <div class="card card-light card-outline product-detail-card">
+    <div class="row mb-3">
+      <div class="col-lg-6 d-flex">
+        <div class="card card-light card-outline product-detail-card h-100 w-100">
           <div class="card-header text-uppercase">Product</div>
           <div class="card-body">
             <div class="product-code"><i class="fas fa-tag mr-2"></i><span id="productCode" class="live-data" data-db="DB2.DBB0[50]" data-format="string">PCL-25</span></div>
@@ -137,8 +118,8 @@ $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
         </div>
       </div>
 
-      <div class="col-lg-6">
-        <div class="card card-light card-outline output-card">
+      <div class="col-lg-6 d-flex">
+        <div class="card card-light card-outline output-card h-100 w-100">
           <div class="card-header">Output</div>
           <div class="card-body">
             <div class="row align-items-start">
@@ -167,35 +148,9 @@ $dashboardJsVersion = @filemtime(__DIR__ . '/dashboard.js') ?: time();
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12">
-        <div class="card card-light card-outline roll-detail-card">
-          <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
-            <span>Roll Detail</span>
-            <span id="rollDetailMeta" class="roll-detail-meta">Pilih roll pada timeline.</span>
-          </div>
-          <div class="card-body">
-            <div id="rollDetailSummary" class="roll-detail-summary d-none"></div>
-            <div id="rollDetailLoading" class="roll-detail-loading d-none">Memuat detail roll...</div>
-            <div id="rollDetailEmpty" class="roll-detail-empty">Klik salah satu roll untuk melihat data `rtagroll`.</div>
-            <div id="rollDetailTableWrap" class="table-responsive d-none">
-              <table class="table table-bordered table-striped table-sm roll-detail-table mb-0">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>DB ID</th>
-                    <th>Address</th>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody id="rollDetailTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <?php
+    $prodHisSection = 'detail';
+    include __DIR__ . '/../history/prod_his.php';
+    ?>
   </div>
 </section>
