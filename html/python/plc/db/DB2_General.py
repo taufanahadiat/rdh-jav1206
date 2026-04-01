@@ -13,6 +13,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from config import PLC_IP, PLC_RACK, PLC_SLOT
+from systemlog import build_cli_payload, write_event as write_system_event
 
 
 RACK = PLC_RACK
@@ -105,6 +106,13 @@ def main() -> int:
         help="Ambil tag STRING tertentu. Bisa diulang. Contoh: DB2.DBB0[50]",
     )
     args = parser.parse_args()
+    write_system_event(
+        service="plc_db",
+        component="db2_general",
+        event="script_started",
+        payload=build_cli_payload(sys.argv),
+        source_file=__file__,
+    )
 
     plc = snap7.client.Client()
     try:
@@ -129,8 +137,26 @@ def main() -> int:
             print(json.dumps(payload, ensure_ascii=False))
         else:
             print(json.dumps(payload, ensure_ascii=False, indent=2))
+        write_system_event(
+            service="plc_db",
+            component="db2_general",
+            event="script_completed",
+            payload={"tag_count": len(args.tag), "mode": "tags" if args.tag else "payload"},
+            source_file=__file__,
+            status_code=130,
+        )
         return 0
     except Exception as exc:
+        write_system_event(
+            service="plc_db",
+            component="db2_general",
+            event="script_failed",
+            payload={"message": str(exc), "tag_count": len(args.tag)},
+            source_file=__file__,
+            severity="critical",
+            status_code=500,
+            message=str(exc),
+        )
         print(json.dumps({"error": str(exc)}, ensure_ascii=False))
         return 1
     finally:

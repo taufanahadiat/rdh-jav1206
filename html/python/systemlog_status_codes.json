@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "historian_timeline": {
+    "plc_not_reach_rollname": "PLC not reach",
+    "timeline_normal_status": 1,
+    "server_shutdown_status": 0,
+    "plc_not_reach_status": 400,
+    "precondition_failed_suffix": "_Precondition_Failed",
+    "precondition_failed_status": 102,
+    "postcondition_failed_suffix": "_Postcondition_Failed",
+    "postcondition_failed_status": 103
+  },
+  "status_codes": {
+    "historian": {
+      "*": {
+        "db_insert": "$payload.status"
+      },
+      "helper_runtime_listener": {
+        "script_started": 110,
+        "script_completed": 130,
+        "script_failed": 550
+      },
+      "listener": {
+        "bit_state": 110,
+        "db_connected": 110,
+        "error": 500,
+        "event_skipped_holdoff": 220,
+        "helper_fields_skipped_no_row": 220,
+        "helper_fields_update_dry_run": 130,
+        "helper_fields_updated": 130,
+        "helper_save_dry_run": 130,
+        "helper_saved": 130,
+        "keyboard_interrupt": 130,
+        "plc_connected": 110,
+        "plc_not_reach_helper_dry_run": "$payload.status",
+        "plc_not_reach_helper_saved": "$payload.status",
+        "plc_not_reach_postcondition_dry_run": "$payload.status",
+        "plc_not_reach_postcondition_inserted": "$payload.status",
+        "plc_not_reach_skipped_no_helper": 220,
+        "plc_not_reach_timeout_failed": 500,
+        "plc_not_reach_timeout_handled": "$payload.status",
+        "plc_reconnected": 330,
+        "plc_recovery_not_reach_close_dry_run": "$payload.status",
+        "plc_recovery_not_reach_close_skipped": 220,
+        "plc_recovery_not_reach_closed": "$payload.status",
+        "plc_unreachable_detected": 430,
+        "precondition_helper_dry_run": "$payload.status",
+        "precondition_helper_saved": "$payload.status",
+        "precondition_helper_skipped": 220,
+        "rolldata_insert_dry_run": "$payload.status",
+        "rolldata_inserted": "$payload.status",
+        "rolldata_pending": 110,
+        "rolldata_skipped_invalid_helper": 220,
+        "rolldata_skipped_no_helper": 220,
+        "rtagroll_catalog_loaded": 110,
+        "rtagroll_insert_partial": 330,
+        "server_shutdown_postcondition_dry_run": "$payload.status",
+        "server_shutdown_recovered": "$payload.shutdown_status",
+        "server_shutdown_recovery_backfilled": 330,
+        "server_shutdown_recovery_skipped": 220,
+        "server_shutdown_timeline_backfill_dry_run": "$payload.status",
+        "server_shutdown_timeline_backfilled": "$payload.status",
+        "server_shutdown_timeline_dry_run": "$payload.status",
+        "signal": 130
+      }
+    }
+  }
+}

@@ -131,6 +131,14 @@ def build_snapshot(sources: List[PlcSource]) -> Dict[str, Any]:
                 message = str(exc)
                 if "Address out of range" in message:
                     source.disabled_reason = message
+                log_event(
+                    "snapshot_source_error",
+                    db=f"DB{source.db_num}",
+                    source_file=source.source_file,
+                    message=message,
+                    severity="high",
+                    status_code=320,
+                )
                 snapshot["errors"][f"DB{source.db_num}"] = message
         snapshot["db_count"] = len(snapshot["dbs"])
         return snapshot

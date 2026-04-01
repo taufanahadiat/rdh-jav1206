@@ -21,13 +21,32 @@ from historian.config import (
     SLOT,
     normalize_text,
 )
+from systemlog import write_event as write_system_event
 
 
 def connect_plc() -> snap7.client.Client:
     plc = snap7.client.Client()
     plc.connect(PLC_IP, RACK, SLOT)
     if not plc.get_connected():
+        write_system_event(
+            service="historian",
+            component="plc_client",
+            event="plc_connect_failed",
+            payload={"plc_ip": PLC_IP, "rack": RACK, "slot": SLOT},
+            source_file=__file__,
+            severity="critical",
+            status_code=500,
+            message="Failed to connect to PLC",
+        )
         raise RuntimeError("Failed to connect to PLC")
+    write_system_event(
+        service="historian",
+        component="plc_client",
+        event="plc_connect_succeeded",
+        payload={"plc_ip": PLC_IP, "rack": RACK, "slot": SLOT},
+        source_file=__file__,
+        status_code=110,
+    )
     return plc
 
 
@@ -64,7 +83,10 @@ def fetch_plc_tag_values(addresses: list[str]) -> dict[str, Any]:
     request = Request(
         API_SNAPSHOT_URL,
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "X-PLCAPI-Caller": "historian_listener",
+        },
         method="POST",
     )
 
@@ -72,11 +94,53 @@ def fetch_plc_tag_values(addresses: list[str]) -> dict[str, Any]:
         with urlopen(request, timeout=API_TIMEOUT_SECONDS) as response:
             body = response.read().decode("utf-8")
     except HTTPError as exc:
+        write_system_event(
+            service="historian",
+            component="plc_client",
+            event="plc_api_http_error",
+            payload={"http_status": exc.code, "reason": exc.reason, "address_count": len(addresses)},
+            source_file=__file__,
+            severity="high",
+            status_code=int(exc.code),
+            message=f"PLC API HTTP {exc.code}: {exc.reason}",
+        )
         raise RuntimeError(f"PLC API HTTP {exc.code}: {exc.reason}") from exc
     except URLError as exc:
+        write_system_event(
+            service="historian",
+            component="plc_client",
+            event="plc_api_unreachable",
+            payload={"reason": str(exc.reason), "address_count": len(addresses)},
+            source_file=__file__,
+            severity="critical",
+            status_code=503,
+            message=f"Failed to reach PLC API: {exc.reason}",
+        )
         raise RuntimeError(f"Failed to reach PLC API: {exc.reason}") from exc
 
     data = json.loads(body)
     if not data.get("ok", False):
+        write_system_event(
+            service="historian",
+            component="plc_client",
+            event="plc_api_invalid_payload",
+            payload={"address_count": len(addresses), "body_preview": body[:200]},
+            source_file=__file__,
+            severity="high",
+            status_code=502,
+            message=f"PLC API returned an invalid snapshot payload: {body[:200]}",
+        )
         raise RuntimeError(f"PLC API returned an invalid snapshot payload: {body[:200]}")
+    write_system_event(
+        service="historian",
+        component="plc_client",
+        event="plc_tag_values_fetched",
+        payload={
+            "address_count": len(addresses),
+            "resolved_tag_count": len(data.get("tag_values", {})),
+            "missing_tag_count": len(data.get("missing_tags", [])),
+        },
+        source_file=__file__,
+        status_code=110,
+    )
     return data

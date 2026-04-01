@@ -6,6 +6,7 @@ from typing import Any, List
 
 import snap7
 
+from systemlog import write_event as write_system_event
 from config import (
     API_ALLOW_ORIGINS,
     PLC_AWL_DIR,
@@ -49,6 +50,13 @@ def log_event(event: str, **payload: Any) -> None:
     }
     data.update(payload)
     print(json.dumps(data, ensure_ascii=False), flush=True)
+    write_system_event(
+        service="plc_api",
+        component="plc_api_app",
+        event=event,
+        payload=data,
+        source_file=__file__,
+    )
 
 
 def connect_plc() -> snap7.client.Client:

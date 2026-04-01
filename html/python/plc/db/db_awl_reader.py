@@ -11,6 +11,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from config import PLC_IP, PLC_RACK, PLC_SLOT
+from systemlog import build_cli_payload, write_event as write_system_event
 
 from plc.db.db_awl_decoder import (
     TAG_PATTERN,
@@ -88,6 +89,14 @@ def run_db_reader(
         help="Ambil tag PLC tertentu. Bisa diulang. Contoh: DB300.DBD200",
     )
     args = parser.parse_args(argv)
+    cli_args = argv if argv is not None else sys.argv[1:]
+    write_system_event(
+        service="plc_db",
+        component=f"db_awl_reader_db{db_num}",
+        event="script_started",
+        payload=build_cli_payload(cli_args),
+        source_file=__file__,
+    )
 
     plc = snap7.client.Client()
 
@@ -160,8 +169,26 @@ def run_db_reader(
         else:
             print(f"\n=== DB{db_num} {db_name} ===")
             print_tree(result)
+        write_system_event(
+            service="plc_db",
+            component=f"db_awl_reader_db{db_num}",
+            event="script_completed",
+            payload={"db_num": db_num, "db_name": db_name, "requested_tag_count": len(requested_tags)},
+            source_file=__file__,
+            status_code=130,
+        )
 
     except Exception as e:
+        write_system_event(
+            service="plc_db",
+            component=f"db_awl_reader_db{db_num}",
+            event="script_failed",
+            payload={"db_num": db_num, "db_name": db_name, "message": str(e)},
+            source_file=__file__,
+            severity="critical",
+            status_code=500,
+            message=str(e),
+        )
         if args.json:
             print(json.dumps({"error": str(e)}, ensure_ascii=False))
         else:

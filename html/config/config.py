@@ -185,6 +185,9 @@ LOG_JSON = _get_env("LOG_JSON", cast=bool, default=True)
 LOG_FILE_PATH_RAW = _get_env("LOG_FILE_PATH", default="")
 LOG_FILE_PATH = Path(LOG_FILE_PATH_RAW).expanduser() if LOG_FILE_PATH_RAW else None
 LOG_ROTATE_DAYS = _get_env("LOG_ROTATE_DAYS", cast=int, default=7)
+SYSTEMLOG_ENABLED = _get_env("SYSTEMLOG_ENABLED", cast=bool, default=True)
+SYSTEMLOG_DB_NAME = _get_env("SYSTEMLOG_DB_NAME", default=DB_NAME)
+SYSTEMLOG_TABLE = _get_env("SYSTEMLOG_TABLE", default="systemlog")
 
 
 def get_postgres_config() -> dict[str, Any]:

@@ -21,6 +21,7 @@ from config import (
     DB_USER,
     PLC_AWL_DIR,
 )
+from systemlog import write_event as write_system_event
 
 
 SOURCE_DIR = PLC_AWL_DIR
@@ -80,7 +81,25 @@ def run_psql(sql: str, stdin_data: Optional[str] = None) -> str:
         check=False,
     )
     if proc.returncode != 0:
+        write_system_event(
+            service="admin",
+            component="awl_import_db",
+            event="psql_command_failed",
+            payload={"sql": sql[:500], "stderr": proc.stderr.strip(), "stdout": proc.stdout.strip()},
+            source_file=__file__,
+            severity="critical",
+            status_code=500,
+            message=proc.stderr.strip() or proc.stdout.strip() or "`psql` failed.",
+        )
         raise RuntimeError(proc.stderr.strip() or proc.stdout.strip() or "`psql` failed.")
+    write_system_event(
+        service="admin",
+        component="awl_import_db",
+        event="psql_command_completed",
+        payload={"sql": sql[:500]},
+        source_file=__file__,
+        status_code=130,
+    )
     return proc.stdout
 
 
@@ -109,7 +128,25 @@ def run_psql_script(script: str) -> str:
         check=False,
     )
     if proc.returncode != 0:
+        write_system_event(
+            service="admin",
+            component="awl_import_db",
+            event="psql_script_failed",
+            payload={"script_preview": script[:1000], "stderr": proc.stderr.strip(), "stdout": proc.stdout.strip()},
+            source_file=__file__,
+            severity="critical",
+            status_code=500,
+            message=proc.stderr.strip() or proc.stdout.strip() or "The `psql` script failed.",
+        )
         raise RuntimeError(proc.stderr.strip() or proc.stdout.strip() or "The `psql` script failed.")
+    write_system_event(
+        service="admin",
+        component="awl_import_db",
+        event="psql_script_completed",
+        payload={"script_length": len(script)},
+        source_file=__file__,
+        status_code=130,
+    )
     return proc.stdout
 
 
@@ -262,3 +299,11 @@ SELECT setval(pg_get_serial_sequence('public.dblist', 'id'), COALESCE((SELECT MA
 COMMIT;"""
     )
     run_psql_script("\n".join(script_parts) + "\n")
+    write_system_event(
+        service="admin",
+        component="awl_import_db",
+        event="dblist_import_completed",
+        payload={"row_count": len(rows), "target_dbmaster_ids": target_ids},
+        source_file=__file__,
+        status_code=130,
+    )

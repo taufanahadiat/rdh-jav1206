@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from plc.db import DB2_General as db2
 
 from plc.db.db_awl_reader import read_tag_direct
-from plc.api.plc_api_app.config import DIRECT_TAG_RE, PLC_IP, STRING_TAG_RE, connect_plc, now_utc_iso
+from plc.api.plc_api_app.config import DIRECT_TAG_RE, PLC_IP, STRING_TAG_RE, connect_plc, log_event, now_utc_iso
 
 
 def normalize_tag(raw_tag: str) -> Tuple[str, int]:
@@ -69,7 +69,7 @@ def collect_tag_values(snapshot: Dict[str, Any], tags: List[str]) -> Tuple[Dict[
     return found, missing
 
 
-def read_missing_tags_direct(tags: List[str]) -> Dict[str, Any]:
+def read_missing_tags_direct(tags: List[str], *, emit_log: bool = True) -> Dict[str, Any]:
     if not tags:
         return {}
 
@@ -100,6 +100,15 @@ def read_missing_tags_direct(tags: List[str]) -> Dict[str, Any]:
         except Exception:
             pass
 
+    if emit_log:
+        log_event(
+            "direct_tag_read_completed",
+            requested_count=len(tags),
+            resolved_count=len(result),
+            db_count=len(normalized),
+            status_code=130,
+            severity="low",
+        )
     return result
 
 
@@ -142,6 +151,7 @@ def build_dashboard_snapshot(
     snapshot: Dict[str, Any],
     tag_list: Optional[List[str]],
     direct_read_missing: bool,
+    emit_direct_read_log: bool = True,
 ) -> Dict[str, Any]:
     requested_tags = tag_list or sorted(snapshot.get("tag_values", {}).keys())
     normalized_tags = normalize_requested_tags(requested_tags)
@@ -149,7 +159,7 @@ def build_dashboard_snapshot(
     tag_values, missing = collect_tag_values(snapshot, normalized_tags)
     source = "cache"
     if missing and direct_read_missing:
-        tag_values.update(read_missing_tags_direct(missing))
+        tag_values.update(read_missing_tags_direct(missing, emit_log=emit_direct_read_log))
         missing = [tag for tag in missing if tag not in tag_values]
         source = "mixed"
 
